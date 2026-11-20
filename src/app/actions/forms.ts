@@ -4,6 +4,7 @@ import { z } from "zod";
 import { joinSchema, contactSchema, type FormResult, type JoinInput, type ContactInput } from "@/lib/forms/schemas";
 import { getServiceClient, hasServiceRole } from "@/lib/supabase/service";
 import { rateLimit, sha256 } from "@/lib/security";
+import { reportServerError } from "@/lib/errors";
 
 function fieldErrors(err: z.ZodError) {
   const out: Record<string, string> = {};
@@ -19,7 +20,27 @@ const NOT_CONNECTED: FormResult = {
   error: "Online applications aren't connected yet. Please use the contact details on the Find an Office page for now.",
 };
 
+const UNEXPECTED: FormResult = { ok: false, error: "Something went wrong on our side. Your details are still here; please try again." };
+
 export async function submitJoin(input: JoinInput): Promise<FormResult> {
+  try {
+    return await submitJoinInner(input);
+  } catch (e) {
+    await reportServerError("action.join", e);
+    return UNEXPECTED;
+  }
+}
+
+export async function submitContact(input: ContactInput): Promise<FormResult> {
+  try {
+    return await submitContactInner(input);
+  } catch (e) {
+    await reportServerError("action.contact", e);
+    return UNEXPECTED;
+  }
+}
+
+async function submitJoinInner(input: JoinInput): Promise<FormResult> {
   const parsed = joinSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Please check the highlighted fields.", fieldErrors: fieldErrors(parsed.error) };
   const d = parsed.data;
@@ -51,13 +72,13 @@ export async function submitJoin(input: JoinInput): Promise<FormResult> {
     });
   if (error) {
     if (error.code === "23505") return { ok: true, duplicate: true };
-    console.error("join insert failed", error.message);
+    console.error("join insert failed", error.code, error.message);
     return { ok: false, error: "Something went wrong on our side. Your details are still here; please try again." };
   }
   return { ok: true };
 }
 
-export async function submitContact(input: ContactInput): Promise<FormResult> {
+async function submitContactInner(input: ContactInput): Promise<FormResult> {
   const parsed = contactSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Please check the highlighted fields.", fieldErrors: fieldErrors(parsed.error) };
   const d = parsed.data;

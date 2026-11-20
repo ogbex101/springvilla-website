@@ -1,6 +1,5 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { draftMode } from "next/headers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isSupabaseConfigured, publicStorageUrl } from "@/lib/supabase/env";
 import { getPublicClient } from "@/lib/supabase/public";
@@ -71,12 +70,6 @@ function usable(m: Media) {
   return m.type !== "image" || m.alt.trim().length > 0;
 }
 
-async function readClient(): Promise<{ db: SupabaseClient; preview: boolean }> {
-  const { isEnabled } = await draftMode();
-  if (isEnabled && hasServiceRole()) return { db: getServiceClient(), preview: true };
-  return { db: getPublicClient(), preview: false };
-}
-
 export async function fetchMedia(db: SupabaseClient, ids: Iterable<string>): Promise<Record<string, Media>> {
   const list = Array.from(new Set(ids));
   if (!list.length) return {};
@@ -112,8 +105,21 @@ export async function getPageData(key: string): Promise<PageData | null> {
   cacheLife("days");
   cacheTag(`page:${key}`, "pages", "media");
   if (!isSupabaseConfigured) return defaultPage(key);
+  return loadPageData(getPublicClient(), key, false);
+}
 
-  const { db, preview } = await readClient();
+/**
+ * Draft-inclusive page data for the admin preview (/preview/[key]). Uncached;
+ * server-only (service role). Public routes never read drafts: Next's Draft Mode
+ * re-runs every cached scope per request, which fails under Cache Components and
+ * took public pages down (500) for admins who had the draft cookie set.
+ */
+export async function getPreviewPageData(key: string): Promise<PageData | null> {
+  if (!isSupabaseConfigured || !hasServiceRole()) return defaultPage(key);
+  return loadPageData(getServiceClient(), key, true);
+}
+
+async function loadPageData(db: SupabaseClient, key: string, preview: boolean): Promise<PageData | null> {
   const { data: page } = await db.from("pages").select("id,key,route,title,seo_title,seo_description,og_image_asset_id,noindex,status").eq("key", key).maybeSingle();
   if (!page) return defaultPage(key);
 

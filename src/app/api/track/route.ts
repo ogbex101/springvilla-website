@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     const parsed = schema.safeParse(JSON.parse(raw));
     if (!parsed.success || !hasServiceRole()) return ok;
     const d = parsed.data;
-    if (/^\/(admin|api|dev)/.test(d.p) || (/^\/member/.test(d.p) && d.e !== "lesson_complete" && d.e !== "login_success")) return ok;
+    if (/^\/(admin|api|dev|preview)/.test(d.p) || (/^\/member/.test(d.p) && d.e !== "lesson_complete" && d.e !== "login_success")) return ok;
 
     const ip = (req.headers.get("x-forwarded-for")?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "0.0.0.0").trim();
     const client = sha256(`${dailySalt()}:${ip}:${ua}`);

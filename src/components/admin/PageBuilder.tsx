@@ -38,7 +38,7 @@ function Row({ s, active, onSelect, onToggle }: { s: AdminSection; active: boole
   );
 }
 
-export function PageBuilder({ pageKey, route, initial, only, title }: { pageKey: string; route: string; initial: AdminSection[]; only?: SectionKey; title?: string }) {
+export function PageBuilder({ pageKey, initial, only, title }: { pageKey: string; route: string; initial: AdminSection[]; only?: SectionKey; title?: string }) {
   const toast = useToast();
   const [sections, setSections] = useState(initial);
   const filtered = only ? sections.filter((s) => s.section_key === only) : sections;
@@ -173,10 +173,10 @@ export function PageBuilder({ pageKey, route, initial, only, title }: { pageKey:
               <div className={cn("mx-auto origin-top-left", device === "mobile" ? "h-[720px] w-[390px] max-w-full" : "h-[720px] w-full")}>
                 {device === "desktop" ? (
                   <div className="relative h-full w-full overflow-hidden">
-                    <iframe key={previewKey} title="Page preview" src={`/api/preview?path=${encodeURIComponent(route)}`} className="absolute left-0 top-0 h-[180%] w-[180%] origin-top-left scale-[0.5556] border-0" />
+                    <iframe key={previewKey} title="Page preview" src={`/preview/${encodeURIComponent(pageKey)}`} className="absolute left-0 top-0 h-[180%] w-[180%] origin-top-left scale-[0.5556] border-0" />
                   </div>
                 ) : (
-                  <iframe key={previewKey} title="Mobile preview" src={`/api/preview?path=${encodeURIComponent(route)}`} className="h-full w-full border-0" />
+                  <iframe key={previewKey} title="Mobile preview" src={`/preview/${encodeURIComponent(pageKey)}`} className="h-full w-full border-0" />
                 )}
               </div>
             </div>

@@ -1,14 +1,14 @@
 import { draftMode } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSession } from "@/lib/auth/session";
-import { can } from "@/lib/auth/roles";
 
-/** Enables Draft Mode for an authenticated content admin, then shows the page. */
+/**
+ * Legacy preview link. Draft Mode is no longer used (it broke public pages under
+ * Cache Components), so this switches it off for browsers that still have the
+ * cookie and sends them to the normal page.
+ */
 export async function GET(req: NextRequest) {
-  const s = await getSession();
-  if (!s || s.needsMfa || !can(s.roles, "siteContent")) return new NextResponse("Not allowed", { status: 403 });
+  (await draftMode()).disable();
   const path = req.nextUrl.searchParams.get("path") ?? "/";
-  const safe = path.startsWith("/") && !path.startsWith("//") && !/^\/(admin|api|member)/.test(path) ? path : "/";
-  (await draftMode()).enable();
+  const safe = path.startsWith("/") && !path.startsWith("//") ? path : "/";
   return NextResponse.redirect(new URL(safe, req.url));
 }
