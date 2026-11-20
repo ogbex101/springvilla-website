@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Container, Section, MediaFrame } from "@/components/ui";
 import { RevealImage, RevealText } from "@/lib/motion";
-import { getPost, getRelatedPosts } from "@/lib/content/collections";
+import { getPost, getRelatedPosts, getStaticSlugs } from "@/lib/content/collections";
 import { ArticleCard } from "@/components/content/cards";
 import { ReadingProgress, ShareLinks } from "@/components/content/ArticleTools";
 import { JsonLd } from "@/components/site/JsonLd";
@@ -13,6 +13,10 @@ import { buildMetadata, breadcrumbLd } from "@/lib/seo";
 import { formatDate, siteUrl } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
+
+export function generateStaticParams() {
+  return getStaticSlugs("posts");
+}
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;

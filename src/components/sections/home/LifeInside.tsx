@@ -1,6 +1,6 @@
+import { RevealHeading } from "@/components/ui/RevealHeading";
 import Image from "next/image";
-import { Container, Section, Eyebrow, DisplayHeading, ButtonLink, Chip, type PaletteLayer } from "@/components/ui";
-import { RevealText } from "@/lib/motion";
+import { Container, Section, Eyebrow, ButtonLink, Chip, type PaletteLayer } from "@/components/ui";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
 import { hasCta } from "@/lib/content/fields";
@@ -31,9 +31,7 @@ export function LifeInside({ content, layer, media }: { content: SectionContent<
         <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <Eyebrow>{content.eyebrow}</Eyebrow>
-            <RevealText as="div" className="mt-6">
-              <DisplayHeading id="life-heading" text={content.heading} highlight={content.highlight} size="l" />
-            </RevealText>
+            <RevealHeading id="life-heading" text={content.heading} highlight={content.highlight} size="l" className="mt-6" />
           </div>
           <div className="lg:col-span-5">
             {content.body && <p className="max-w-[46ch] text-lead text-muted">{content.body}</p>}

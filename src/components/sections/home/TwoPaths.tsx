@@ -1,12 +1,13 @@
 "use client";
+import { RevealHeading } from "@/components/ui/RevealHeading";
 
 import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
-import { Container, Eyebrow, DisplayHeading, ButtonLink, Chip, OutlineNumeral, MediaFrame, type PaletteLayer } from "@/components/ui";
+import { Container, Eyebrow, ButtonLink, Chip, OutlineNumeral, MediaFrame, type PaletteLayer } from "@/components/ui";
 import { gsap, SplitText, useGSAP, markReady } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "@/lib/motion/useReducedMotion";
-import { RevealText, StaggerCards } from "@/lib/motion";
+import { StaggerCards } from "@/lib/motion";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
 import { hasCta } from "@/lib/content/fields";
@@ -73,9 +74,7 @@ export function TwoPaths({ content, layer, media }: { content: Content; layer: P
         <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <Eyebrow>{content.eyebrow}</Eyebrow>
-            <RevealText as="div" className="mt-6">
-              <DisplayHeading id="two-paths-heading" text={content.heading} highlight={content.highlight} size="l" />
-            </RevealText>
+            <RevealHeading id="two-paths-heading" text={content.heading} highlight={content.highlight} size="l" className="mt-6" />
           </div>
           {content.intro && <p className="max-w-[46ch] text-lead text-muted lg:col-span-5">{content.intro}</p>}
         </div>

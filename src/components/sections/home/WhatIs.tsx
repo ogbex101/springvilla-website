@@ -1,4 +1,5 @@
-import { Container, Section, Eyebrow, DisplayHeading, ButtonLink, MediaFrame, type PaletteLayer } from "@/components/ui";
+import { RevealHeading } from "@/components/ui/RevealHeading";
+import { Container, Section, Eyebrow, ButtonLink, MediaFrame, type PaletteLayer } from "@/components/ui";
 import { RevealImage, RevealText, DrawLine } from "@/lib/motion";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
@@ -20,9 +21,7 @@ export function WhatIs({ content, layer, media }: { content: SectionContent<"hom
           </div>
           <div className="lg:col-span-6">
             <Eyebrow>{content.eyebrow}</Eyebrow>
-            <RevealText as="div" className="mt-6">
-              <DisplayHeading id="what-is-heading" text={content.heading} highlight={content.highlight} size="l" />
-            </RevealText>
+            <RevealHeading id="what-is-heading" text={content.heading} highlight={content.highlight} size="l" className="mt-6" />
             {content.body && (
               <RevealText as="p" className="mt-8 max-w-[52ch] text-lead text-muted" delay={0.1}>
                 {content.body}

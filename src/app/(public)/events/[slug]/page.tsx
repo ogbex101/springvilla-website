@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { CalendarDays, MapPin, Globe } from "lucide-react";
 import { Container, Section, MediaFrame, ButtonLink } from "@/components/ui";
 import { RevealText } from "@/lib/motion";
-import { getEvent } from "@/lib/content/collections";
+import { getEvent, getStaticSlugs } from "@/lib/content/collections";
 import { EventDate } from "@/components/content/EventDate";
 import { TrackView } from "@/components/content/ArticleTools";
 import { JsonLd } from "@/components/site/JsonLd";
@@ -13,6 +13,10 @@ import { buildMetadata, breadcrumbLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
+
+export function generateStaticParams() {
+  return getStaticSlugs("events");
+}
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;

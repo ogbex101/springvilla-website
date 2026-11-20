@@ -430,3 +430,31 @@ export async function getSitemapEntries() {
   const map = (rows: { slug: string; updated_at: string }[] | null, base: string) => (rows ?? []).map((r) => ({ path: `${base}/${r.slug}`, updatedAt: r.updated_at }));
   return [...map(p.data, "/ideas"), ...map(e.data, "/events"), ...map(o.data, "/offices"), ...map(j.data, "/journeys"), ...map(n.data, "/news")];
 }
+
+/* ------------------------------------------------------------------ static params */
+const SLUG_SOURCES = {
+  posts: { table: "blog_posts", filter: {} as Record<string, string> },
+  events: { table: "events", filter: { status: "published", audience: "public" } },
+  offices: { table: "offices", filter: { status: "published" } },
+  journeys: { table: "member_journeys", filter: { status: "published" } },
+  news: { table: "announcements", filter: { status: "published", kind: "news" } },
+} as const;
+
+/**
+ * Published slugs to prerender at build time (full HTML, readable without JS).
+ * Cache Components requires at least one entry, so a placeholder (→ 404) is
+ * returned when there is no content yet; new slugs render on first visit.
+ */
+export async function getStaticSlugs(kind: keyof typeof SLUG_SOURCES): Promise<{ slug: string }[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(kind === "posts" ? "posts" : kind);
+  const placeholder = [{ slug: "__none" }];
+  if (!isSupabaseConfigured) return placeholder;
+  const src = SLUG_SOURCES[kind];
+  let q = getPublicClient().from(src.table).select("slug").limit(500);
+  for (const [k, v] of Object.entries(src.filter)) q = q.eq(k, v);
+  const { data } = await q;
+  const rows = (data ?? []) as { slug: string }[];
+  return rows.length ? rows.map((r) => ({ slug: r.slug })) : placeholder;
+}

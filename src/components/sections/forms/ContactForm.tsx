@@ -19,8 +19,9 @@ export function ContactForm({ types, offices, successHeading, successBody, defau
   const successRef = useRef<HTMLHeadingElement>(null);
   const { register, handleSubmit, setError, setValue, control, formState } = useForm<ContactInput>({
     resolver: zodResolver(contactSchema),
-    mode: "onTouched",
-    defaultValues: { enquiryType: (defaultType as ContactInput["enquiryType"]) ?? undefined, officeId: "", phone: "", subject: "", website: "" },
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+    defaultValues: { enquiryType: (defaultType as ContactInput["enquiryType"]) ?? undefined, name: "", email: "", message: "", officeId: "", phone: "", subject: "", website: "" },
   });
   const { errors, isSubmitting } = formState;
   const type = useWatch({ control, name: "enquiryType" });

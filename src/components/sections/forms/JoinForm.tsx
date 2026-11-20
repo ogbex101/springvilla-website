@@ -23,8 +23,9 @@ export function JoinForm({ offices, copy }: { offices: Office[]; copy: Copy }) {
 
   const { register, handleSubmit, setError, formState } = useForm<JoinInput>({
     resolver: zodResolver(joinSchema),
-    mode: "onTouched",
-    defaultValues: { officeId: "", state: "", ageRange: "", currentSituation: "", howHeard: "", hopedOutcome: "", consentContact: true, website: "" },
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+    defaultValues: { fullName: "", email: "", phone: "", city: "", officeId: "", state: "", ageRange: "", currentSituation: "", howHeard: "", hopedOutcome: "", consentContact: true, website: "" },
   });
   const { errors, isSubmitting } = formState;
 

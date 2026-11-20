@@ -1,5 +1,6 @@
-import { Container, Section, Eyebrow, DisplayHeading, ButtonLink, MediaFrame, type PaletteLayer } from "@/components/ui";
-import { RevealImage, RevealText } from "@/lib/motion";
+import { RevealHeading } from "@/components/ui/RevealHeading";
+import { Container, Section, Eyebrow, ButtonLink, MediaFrame, type PaletteLayer } from "@/components/ui";
+import { RevealImage } from "@/lib/motion";
 import { getOffices } from "@/lib/content/collections";
 import { OfficeSearch } from "@/components/content/OfficeSearch";
 import type { SectionContent } from "@/lib/content/schemas";
@@ -16,9 +17,7 @@ export async function FindPlace({ content, layer, media }: { content: SectionCon
         <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <Eyebrow>{content.eyebrow}</Eyebrow>
-            <RevealText as="div" className="mt-6">
-              <DisplayHeading id="find-heading" text={content.heading} highlight={content.highlight} size="l" />
-            </RevealText>
+            <RevealHeading id="find-heading" text={content.heading} highlight={content.highlight} size="l" className="mt-6" />
             {content.body && <p className="mt-6 max-w-[48ch] text-lead text-muted">{content.body}</p>}
           </div>
           <div className="lg:col-span-5">

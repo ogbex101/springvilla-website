@@ -3,13 +3,17 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Container, Section, MediaFrame } from "@/components/ui";
 import { RevealText } from "@/lib/motion";
-import { getNewsItem } from "@/lib/content/collections";
+import { getNewsItem, getStaticSlugs } from "@/lib/content/collections";
 import { JsonLd } from "@/components/site/JsonLd";
 import { SafeHtml } from "@/components/site/SafeHtml";
 import { buildMetadata, breadcrumbLd } from "@/lib/seo";
 import { formatDate, siteUrl } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
+
+export function generateStaticParams() {
+  return getStaticSlugs("news");
+}
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;

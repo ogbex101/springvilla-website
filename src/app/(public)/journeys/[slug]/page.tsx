@@ -3,13 +3,17 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Container, Section, MediaFrame } from "@/components/ui";
 import { RevealText } from "@/lib/motion";
-import { getJourney } from "@/lib/content/collections";
+import { getJourney, getStaticSlugs } from "@/lib/content/collections";
 import { Timeline } from "@/components/content/Timeline";
 import { JsonLd } from "@/components/site/JsonLd";
 import { SafeHtml } from "@/components/site/SafeHtml";
 import { buildMetadata, breadcrumbLd } from "@/lib/seo";
 
 type Params = Promise<{ slug: string }>;
+
+export function generateStaticParams() {
+  return getStaticSlugs("journeys");
+}
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;

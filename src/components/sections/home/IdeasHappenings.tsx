@@ -1,5 +1,6 @@
-import { Container, Section, Eyebrow, DisplayHeading, ButtonLink, type PaletteLayer } from "@/components/ui";
-import { RevealText, StaggerCards } from "@/lib/motion";
+import { RevealHeading } from "@/components/ui/RevealHeading";
+import { Container, Section, Eyebrow, ButtonLink, type PaletteLayer } from "@/components/ui";
+import { StaggerCards } from "@/lib/motion";
 import { getFeaturedPost, searchPosts, getUpcomingEvents, getNews } from "@/lib/content/collections";
 import { ArticleCard, EventCard, NewsCard } from "@/components/content/cards";
 import type { SectionContent } from "@/lib/content/schemas";
@@ -25,9 +26,7 @@ export async function IdeasHappenings({ content, layer }: { content: SectionCont
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <Eyebrow>{content.eyebrow}</Eyebrow>
-            <RevealText as="div" className="mt-6">
-              <DisplayHeading id="ideas-heading" text={content.heading} highlight={content.highlight} size="m" />
-            </RevealText>
+            <RevealHeading id="ideas-heading" text={content.heading} highlight={content.highlight} size="m" className="mt-6" />
             {content.body && <p className="mt-5 max-w-[48ch] text-lead text-muted">{content.body}</p>}
           </div>
           {!empty && hasCta(content.cta) && (

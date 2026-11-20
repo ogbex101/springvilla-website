@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { BadgeCheck, Clock, Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 import { Container, Section, MediaFrame, ButtonLink, Eyebrow } from "@/components/ui";
 import { RevealText, StaggerCards } from "@/lib/motion";
-import { getOffice, getUpcomingEvents } from "@/lib/content/collections";
+import { getOffice, getUpcomingEvents, getStaticSlugs } from "@/lib/content/collections";
 import { EventCard } from "@/components/content/cards";
 import { TrackView } from "@/components/content/ArticleTools";
 import { OfficeSearch } from "@/components/content/OfficeSearch";
@@ -14,6 +14,10 @@ import { buildMetadata, breadcrumbLd } from "@/lib/seo";
 import { formatDate, siteUrl } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
+
+export function generateStaticParams() {
+  return getStaticSlugs("offices");
+}
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;

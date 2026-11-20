@@ -6,7 +6,6 @@ import { pageMetadata } from "@/lib/seo";
 import { Container, Section } from "@/components/ui";
 import { searchPosts, getCategories, PAGE_SIZE } from "@/lib/content/collections";
 import { ArticleCard } from "@/components/content/cards";
-import { GridSkeleton } from "@/components/content/Listing";
 import { StaggerCards } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +14,15 @@ export const generateMetadata = () => pageMetadata("ideas");
 type SP = Promise<{ q?: string; category?: string; page?: string }>;
 
 async function Results({ searchParams }: { searchParams: SP }) {
-  const sp = await searchParams;
+  return <ResultsView sp={await searchParams} />;
+}
+
+/** Unfiltered list: the static fallback, so the page is complete without JavaScript. */
+function DefaultResults() {
+  return <ResultsView sp={{}} />;
+}
+
+async function ResultsView({ sp }: { sp: { q?: string; category?: string; page?: string } }) {
   const q = (sp.q ?? "").slice(0, 80);
   const category = sp.category || undefined;
   const page = Math.max(1, Math.min(20, Number(sp.page) || 1));
@@ -79,7 +86,7 @@ export default function IdeasPage({ searchParams }: { searchParams: SP }) {
   return (
     <>
       <CmsPage pageKey="ideas" crumbs={[{ name: "Ideas", path: "/ideas" }]} />
-      <Suspense fallback={<GridSkeleton />}>
+      <Suspense fallback={<DefaultResults />}>
         <Results searchParams={searchParams} />
       </Suspense>
     </>

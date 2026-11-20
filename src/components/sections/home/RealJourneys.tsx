@@ -1,6 +1,7 @@
+import { RevealHeading } from "@/components/ui/RevealHeading";
 import Link from "next/link";
-import { Container, Section, Eyebrow, DisplayHeading, ButtonLink, MediaFrame, type PaletteLayer } from "@/components/ui";
-import { RevealText, StaggerCards } from "@/lib/motion";
+import { Container, Section, Eyebrow, ButtonLink, MediaFrame, type PaletteLayer } from "@/components/ui";
+import { StaggerCards } from "@/lib/motion";
 import { getJourneys } from "@/lib/content/collections";
 import { Timeline } from "@/components/content/Timeline";
 import type { SectionContent } from "@/lib/content/schemas";
@@ -17,9 +18,7 @@ export async function RealJourneys({ content, layer }: { content: SectionContent
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
               <Eyebrow>{content.eyebrow}</Eyebrow>
-              <RevealText as="div" className="mt-6">
-                <DisplayHeading id="journeys-heading" text={content.heading} highlight={content.highlight} size="m" />
-              </RevealText>
+              <RevealHeading id="journeys-heading" text={content.heading} highlight={content.highlight} size="m" className="mt-6" />
               {content.body && <p className="mt-6 max-w-[42ch] text-lead text-muted">{content.body}</p>}
               {journeys.length > 0 && hasCta(content.cta) && (
                 <div className="mt-8">
