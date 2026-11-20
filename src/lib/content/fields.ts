@@ -19,7 +19,15 @@ export type Widget =
   | "select"
   | "stringList"
   | "list"
-  | "imageList";
+  | "imageList"
+  | "ref"
+  | "refMulti"
+  | "date"
+  | "datetime"
+  | "decimal"
+  | "privateFile";
+
+export type RefKind = "offices" | "categories" | "tags" | "consent" | "courses" | "modules";
 
 export type FieldMeta = {
   widget: Widget;
@@ -29,6 +37,9 @@ export type FieldMeta = {
   min?: number;
   max?: number;
   itemLabel?: string;
+  ref?: RefKind;
+  bucket?: string;
+  required?: boolean;
 };
 
 const meta = (m: FieldMeta) => m;
@@ -64,6 +75,20 @@ export const f = {
     z.array(z.string().max(200)).max(max).default([]).meta(meta({ widget: "stringList", label, help, max })),
   imageList: (label: string, help?: string, min = 0, max = 24) =>
     z.array(z.string().uuid()).max(max).default([]).meta(meta({ widget: "imageList", label, help, min, max })),
+  ref: (label: string, ref: RefKind, help?: string) =>
+    z.string().uuid().nullable().default(null).meta(meta({ widget: "ref", label, help, ref })),
+  refMulti: (label: string, ref: RefKind, help?: string) =>
+    z.array(z.string().uuid()).default([]).meta(meta({ widget: "refMulti", label, help, ref })),
+  date: (label: string, help?: string) =>
+    z.string().regex(/^(\d{4}-\d{2}-\d{2})?$/, "Use a valid date").nullable().default(null).meta(meta({ widget: "date", label, help })),
+  datetime: (label: string, help?: string) =>
+    z.string().regex(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})?$/, "Use a valid date and time").nullable().default(null).meta(meta({ widget: "datetime", label, help })),
+  decimal: (label: string, help?: string) =>
+    z.number().nullable().default(null).meta(meta({ widget: "decimal", label, help })),
+  privateFile: (label: string, bucket: string, help?: string) =>
+    z.string().max(300).nullable().default(null).meta(meta({ widget: "privateFile", label, help, bucket })),
+  required: (label: string, help?: string, max = 200) =>
+    z.string().trim().min(1, `${label} is required`).max(max).default("").meta(meta({ widget: "text", label, help, required: true })),
   list: <S extends z.ZodRawShape>(label: string, shape: S, itemLabel: string, help?: string, max = 24) =>
     z.array(z.object(shape)).max(max).default([]).meta(meta({ widget: "list", label, help, itemLabel, max })),
 };

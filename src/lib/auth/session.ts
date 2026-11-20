@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -20,7 +21,7 @@ export type SessionInfo = {
  * Note: super_admin is dropped from effective roles until the session is aal2,
  * matching public.current_roles() in the database.
  */
-export async function getSession(): Promise<SessionInfo | null> {
+export const getSession = cache(async function getSession(): Promise<SessionInfo | null> {
   if (!isSupabaseConfigured) return null;
   const supabase = await getServerClient();
   const { data: auth } = await supabase.auth.getUser();
@@ -49,7 +50,7 @@ export async function getSession(): Promise<SessionInfo | null> {
     aal,
     needsMfa: isSuper && aal !== "aal2",
   };
-}
+});
 
 export function isStaff(s: SessionInfo | null) {
   return Boolean(s && s.roles.some(isStaffRole));
