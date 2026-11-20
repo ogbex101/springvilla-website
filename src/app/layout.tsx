@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: { default: "Springvilla", template: "%s · Springvilla" },
   formatDetection: { telephone: false },
+  ...(process.env.SITE_NOINDEX === "true" ? { robots: { index: false, follow: false } } : {}),
 };
 
 export const viewport: Viewport = {

@@ -52,7 +52,7 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      { source: "/:path*", headers: securityHeaders },
+      { source: "/:path*", headers: process.env.SITE_NOINDEX === "true" ? [...securityHeaders, { key: "X-Robots-Tag", value: "noindex, nofollow" }] : securityHeaders },
       {
         source: "/(admin|member|login|api|dev)/:path*",
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],

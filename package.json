@@ -13,7 +13,8 @@
     "test:db": "tsx scripts/test-db.ts",
     "db:migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
-    "seed:admin": "tsx scripts/seed-admin.ts"
+    "seed:admin": "tsx scripts/seed-admin.ts",
+    "db:setup-sql": "tsx scripts/build-setup-sql.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

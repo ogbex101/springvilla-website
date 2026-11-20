@@ -13,8 +13,8 @@ Things only you can provide or do. The site keeps working without them: empty fi
 1. Go to https://supabase.com, sign in, **New project**. Name: `springvilla`. Region: closest to most visitors (e.g. `eu-west-2` London or `eu-central-1`). Save the database password somewhere safe.
 2. **Project Settings → API**: copy the Project URL, `anon` public key and `service_role` key.
 3. **Project Settings → Database → Connection string → URI**: copy it (replace `[YOUR-PASSWORD]`). This is `DATABASE_URL`.
-4. In the repo, copy `.env.example` to `.env.local` and fill in every value. Generate `ANALYTICS_SALT` with `openssl rand -hex 32`. Set `SUPER_ADMIN_EMAIL` to your own email.
-5. Run the migrations (creates every table, policy and storage bucket):
+4. In the repo, copy `.env.example` to `.env.local` and fill in every value. New-style keys work: put the **publishable** key (`sb_publishable_…`) in `NEXT_PUBLIC_SUPABASE_ANON_KEY` and the **secret** key (`sb_secret_…`) in `SUPABASE_SERVICE_ROLE_KEY`. In `DATABASE_URL`, write any `@` in the password as `%40`. Generate `ANALYTICS_SALT` with `openssl rand -hex 32`. Set `SUPER_ADMIN_EMAIL` to your own email.
+5. **Easiest:** open `docs/supabase_setup.sql`, copy all of it into **SQL Editor → New query → Run**. It creates everything and seeds the copy in one go (regenerate it with `npm run db:setup-sql` after future changes). **Or**, from your own computer, run the migrations (creates every table, policy and storage bucket):
    ```bash
    npm run db:migrate
    ```
@@ -45,7 +45,15 @@ The migration creates them; check under **Storage** that these exist:
    ```bash
    npm run seed:admin
    ```
-   This gives that user the `super_admin` role.
+   This gives that user the `super_admin` role. **Or** paste this into the SQL Editor (replace the email):
+   ```sql
+   insert into public.profiles (id, email)
+   select id, email from auth.users where lower(email) = lower('you@example.com')
+   on conflict (id) do update set is_active = true;
+   insert into public.user_roles (user_id, role, office_id)
+   select id, 'super_admin', null from auth.users where lower(email) = lower('you@example.com')
+   on conflict on constraint user_roles_unique do nothing;
+   ```
 3. Sign in at `/admin/login`. You will be asked to set up an authenticator app (TOTP) the first time. Super admins cannot skip this.
 
 ## D. Verified facts and assets still needed

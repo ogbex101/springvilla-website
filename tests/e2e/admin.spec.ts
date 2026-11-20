@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import path from "node:path";
 import fs from "node:fs";
-import { adminCreds, hasAdmin } from "./helpers";
+import { adminCreds, hasAdmin, totp, totpSecret } from "./helpers";
 
 /**
  * End-to-end admin flows against a real Supabase project.
@@ -26,6 +26,15 @@ test.describe("admin", () => {
       await page.getByLabel("Email").fill(adminCreds.email);
       await page.getByLabel("Password").fill(adminCreds.password);
       await page.getByRole("button", { name: "Sign in" }).click();
+      await page.waitForURL(/\/admin(\/mfa.*)?$/);
+      if (page.url().includes("/admin/mfa")) {
+        // Super admin: complete TOTP only with a key the owner supplied. Never enrol a new factor.
+        await expect(page.getByLabel("6-digit code")).toBeVisible();
+        test.skip(await page.getByText("Scan this code").isVisible(), "Super admin has no authenticator yet: set one up in the browser first, then add E2E_ADMIN_TOTP_SECRET.");
+        test.skip(!totpSecret, "Account is a super admin: add E2E_ADMIN_TOTP_SECRET (the key shown at authenticator setup) to run admin tests.");
+        await page.getByLabel("6-digit code").fill(totp(totpSecret));
+        await page.getByRole("button", { name: "Verify" }).click();
+      }
       await expect(page).toHaveURL(/\/admin$/);
     };
 

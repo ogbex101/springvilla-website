@@ -13,6 +13,7 @@ Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind v4 · Supaba
 | `npm run build` / `npm start` | Production build / server |
 | `npm run typecheck` · `npm run lint` | Checks |
 | `npm run db:migrate` | Apply `supabase/migrations` to `DATABASE_URL` |
+| `npm run db:setup-sql` | Regenerate `docs/supabase_setup.sql` (all migrations + seed, for the SQL Editor) |
 | `npm run seed` | Seed page copy, settings and navigation (idempotent, never overwrites edits) |
 | `npm run seed:admin` | Make `SUPER_ADMIN_EMAIL` a super admin |
 | `npm run test:db` | RLS/permission tests on a throwaway local Postgres (`TEST_PG_URL`) |
