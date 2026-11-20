@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP, markReady } from "./gsap";
+import { markReady, useGsap } from "./gsap";
 import { prefersReducedMotion } from "./useReducedMotion";
 import { cn } from "@/lib/utils";
 
@@ -39,10 +39,10 @@ export function RevealImage({
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap }) => {
       const frame = ref.current;
-      if (!frame) return;
+      if (!frame || immediate) return;
       const inner = (frame.querySelector("[data-reveal-inner]") ?? frame.firstElementChild) as HTMLElement | null;
       if (prefersReducedMotion()) {
         markReady(frame);
@@ -78,6 +78,10 @@ export function RevealImage({
     { scope: ref },
   );
 
+  // Above-the-fold images are never hidden (LCP): a CSS transform-only settle instead of a clip reveal.
+  if (immediate) {
+    return <div className={cn("sv-img-settle relative overflow-hidden", className)}>{children}</div>;
+  }
   return (
     <div ref={ref} data-reveal="" className={cn("relative overflow-hidden", className)}>
       {children}

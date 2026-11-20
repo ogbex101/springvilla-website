@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ElementType, type ReactNode, type ComponentPropsWithoutRef } from "react";
-import { gsap, SplitText, useGSAP, markReady } from "./gsap";
+import { markReady, useGsap } from "./gsap";
 import { prefersReducedMotion } from "./useReducedMotion";
 
 type Mode = "lines" | "words" | "chars";
@@ -37,15 +37,17 @@ export function RevealText<T extends ElementType = "div">({
   const Tag = (as ?? "div") as ElementType;
   const ref = useRef<HTMLElement>(null);
 
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap, SplitText }) => {
       const el = ref.current;
-      if (!el) return;
+      if (!el || immediate) return;
       if (prefersReducedMotion()) {
         markReady(el);
         return;
       }
-      const split = SplitText.create(el, {
+      let split: InstanceType<typeof SplitText> | null = null;
+      const run = () => {
+      split = SplitText.create(el, {
         type: mode === "lines" ? "lines" : mode === "words" ? "words" : "chars,words",
         mask: mode,
         autoSplit: mode === "lines",
@@ -67,11 +69,38 @@ export function RevealText<T extends ElementType = "div">({
           return tween;
         },
       });
-      return () => split.revert();
+      };
+      if (immediate) {
+        run();
+        return () => split?.revert();
+      }
+      // Defer splitting (layout work) until the heading approaches the viewport.
+      const io = new IntersectionObserver(
+        ([e]) => {
+          if (!e.isIntersecting) return;
+          io.disconnect();
+          run();
+        },
+        { rootMargin: "25% 0px" },
+      );
+      io.observe(el);
+      return () => {
+        io.disconnect();
+        split?.revert();
+      };
     },
     { scope: ref, dependencies: [mode, immediate, delay] },
   );
 
+  // Above-the-fold (immediate) headings are never hidden: they rise with a CSS,
+  // transform-only animation from the first frame so they can be the LCP paint.
+  if (immediate) {
+    return (
+      <Tag className={["sv-hero-fade", className].filter(Boolean).join(" ")} style={delay ? { animationDelay: `${delay}s` } : undefined} {...rest}>
+        {children}
+      </Tag>
+    );
+  }
   return (
     <Tag ref={ref} data-reveal="" className={className} {...rest}>
       {children}

@@ -115,7 +115,7 @@ export async function reorder(pageKey: string, ids: string[]): Promise<R> {
 export async function addSection(pageKey: string, sectionKey: string): Promise<R<string>> {
   try {
     await requireCapability("siteContent");
-    if (!isSectionKey(sectionKey) || sectionKey.startsWith("home.")) throw new Error("That section type can't be added here.");
+    if (!isSectionKey(sectionKey) || sectionKey.startsWith("home.") || sectionKey === "join_form" || sectionKey === "contact_form") throw new Error("That section type can't be added here.");
     const db = await getServerClient();
     const { data: page } = await db.from("pages").select("id").eq("key", pageKey).single();
     if (!page) throw new Error("Page not found");

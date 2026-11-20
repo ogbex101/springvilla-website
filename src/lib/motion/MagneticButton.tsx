@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP } from "./gsap";
+import { useGsap } from "./gsap";
 import { useFinePointer, useReducedMotion } from "./useReducedMotion";
 
 /** Wraps a button/link; pulls it toward the pointer on desktop fine pointers only. */
@@ -10,8 +10,8 @@ export function MagneticButton({ children, strength = 0.3, className }: { childr
   const fine = useFinePointer();
   const reduced = useReducedMotion();
 
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap }) => {
       const el = ref.current;
       if (!el || !fine || reduced) return;
       const xTo = gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" });

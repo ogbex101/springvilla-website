@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, SplitText, useGSAP, markReady } from "@/lib/motion/gsap";
+import { markReady, useGsap } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "@/lib/motion/useReducedMotion";
 import type { SectionContent } from "@/lib/content/schemas";
 
@@ -22,8 +22,8 @@ export function JourneyWords({ content }: { content: SectionContent<"home.journe
   const root = useRef<HTMLElement>(null);
   const words = content.words.filter(Boolean);
 
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap, SplitText }) => {
       const el = root.current;
       if (!el) return;
       const q = gsap.utils.selector(el);

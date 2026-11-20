@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, ScrollTrigger, useGSAP } from "./gsap";
+import { useGsap } from "./gsap";
 import { prefersReducedMotion } from "./useReducedMotion";
 
 /**
@@ -12,8 +12,8 @@ import { prefersReducedMotion } from "./useReducedMotion";
  */
 export function ColourShift({ children, className }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap, ScrollTrigger }) => {
       const root = ref.current;
       if (!root || prefersReducedMotion()) return;
       const sections = Array.from(root.querySelectorAll<HTMLElement>(":scope > [data-layer]"));

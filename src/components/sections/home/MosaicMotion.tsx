@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP, markReady } from "@/lib/motion/gsap";
+import { markReady, useGsap } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "@/lib/motion/useReducedMotion";
 
 const SPEEDS = [-6, 5, -9, 7, -4, 8, -7, 4, -5];
@@ -10,8 +10,8 @@ const FROM = ["inset(100% 0% 0% 0%)", "inset(0% 0% 0% 100%)", "inset(0% 100% 0% 
 /** Each tile opens with a clip reveal at a different delay and drifts at its own parallax speed. */
 export function MosaicMotion({ children, className }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap }) => {
       const el = ref.current;
       if (!el) return;
       if (prefersReducedMotion()) return markReady(el);

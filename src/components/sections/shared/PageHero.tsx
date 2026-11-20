@@ -4,7 +4,7 @@ import { renderHighlighted } from "@/components/ui/DisplayHeading";
 import { RevealImage, RevealText } from "@/lib/motion";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 import { HeroLoop } from "./HeroLoop";
 
 /** Inner-page hero. The H1 lives here. Variants: full-bleed image, split, typographic. */

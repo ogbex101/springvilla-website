@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Fragment } from "react";
 import { getChrome, getPageData, type SectionRow } from "@/lib/content/queries";
 import { RenderSection } from "@/components/sections/SectionRenderer";
+import { homeRegistry } from "@/components/sections/registries/home";
 import { ColourShift } from "@/lib/motion";
 import { JsonLd } from "@/components/site/JsonLd";
 import { pageMetadata } from "@/lib/seo";
@@ -36,12 +37,12 @@ export default async function HomePage() {
         g.length > 1 ? (
           <ColourShift key={g[0].id}>
             {g.map((s) => (
-              <RenderSection key={s.id} section={s} media={page.media} />
+              <RenderSection key={s.id} section={s} media={page.media} registry={homeRegistry} />
             ))}
           </ColourShift>
         ) : (
           <Fragment key={g[0].id}>
-            <RenderSection section={g[0]} media={page.media} />
+            <RenderSection section={g[0]} media={page.media} registry={homeRegistry} />
           </Fragment>
         ),
       )}

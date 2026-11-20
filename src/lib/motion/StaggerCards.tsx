@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ElementType, type ReactNode } from "react";
-import { gsap, useGSAP, markReady } from "./gsap";
+import { markReady, useGsap } from "./gsap";
 import { prefersReducedMotion } from "./useReducedMotion";
 
 type Props = {
@@ -20,8 +20,8 @@ type Props = {
  */
 export function StaggerCards({ as: Tag = "div", children, className, selector, stagger = 0.1, start = "top 82%" }: Props) {
   const ref = useRef<HTMLElement>(null);
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap }) => {
       const el = ref.current;
       if (!el) return;
       if (prefersReducedMotion()) return markReady(el);

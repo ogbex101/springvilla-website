@@ -1,9 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
-import Lenis from "lenis";
+import type Lenis from "lenis";
 import { RouteChange } from "./RouteChange";
-import { gsap, ScrollTrigger } from "./gsap";
+import { loadGsap } from "./gsap";
 import { useReducedMotion } from "./useReducedMotion";
 
 type ScrollApi = {
@@ -55,17 +55,26 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     document.documentElement.classList.add("motion-ok");
     if (disabled) return;
 
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, syncTouch: false });
-    lenisRef.current = lenis;
-    lenis.on("scroll", ScrollTrigger.update);
-    const tick = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-
+    // Lenis + GSAP load after hydration so they never delay first paint.
+    let cancelled = false;
+    let teardown = () => {};
+    void Promise.all([import("lenis"), loadGsap()]).then(([{ default: LenisCtor }, { gsap, ScrollTrigger }]) => {
+      if (cancelled) return;
+      const lenis = new LenisCtor({ lerp: 0.1, smoothWheel: true, syncTouch: false });
+      lenisRef.current = lenis;
+      lenis.on("scroll", ScrollTrigger.update);
+      const tick = (time: number) => lenis.raf(time * 1000);
+      gsap.ticker.add(tick);
+      gsap.ticker.lagSmoothing(0);
+      teardown = () => {
+        gsap.ticker.remove(tick);
+        lenis.destroy();
+        lenisRef.current = null;
+      };
+    });
     return () => {
-      gsap.ticker.remove(tick);
-      lenis.destroy();
-      lenisRef.current = null;
+      cancelled = true;
+      teardown();
     };
   }, [disabled]);
 
@@ -77,7 +86,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       return;
     }
     if (!window.location.hash) lenisRef.current?.scrollTo(0, { immediate: true });
-    window.setTimeout(() => ScrollTrigger.refresh(), 120);
+    window.setTimeout(() => void loadGsap().then(({ ScrollTrigger }) => ScrollTrigger.refresh()), 120);
   }, []);
 
   return (

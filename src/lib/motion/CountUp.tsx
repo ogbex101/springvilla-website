@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP } from "./gsap";
+import { useGsap } from "./gsap";
 import { prefersReducedMotion } from "./useReducedMotion";
 
 /**
@@ -11,8 +11,8 @@ import { prefersReducedMotion } from "./useReducedMotion";
 export function CountUp({ value, duration = 1.6, className, format }: { value: number; duration?: number; className?: string; format?: (n: number) => string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const fmt = format ?? ((n: number) => Math.round(n).toLocaleString("en-GB"));
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap }) => {
       const el = ref.current;
       if (!el || prefersReducedMotion()) return;
       const obj = { n: 0 };

@@ -3,7 +3,7 @@ import { Container, Section, Eyebrow, ButtonLink, MediaFrame, type PaletteLayer 
 import { RevealImage, RevealText, DrawLine } from "@/lib/motion";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 
 /** 02 What Springvilla is. Editorial split + three connected nodes drawn on scroll. */
 export function WhatIs({ content, layer, media }: { content: SectionContent<"home.what_is">; layer: PaletteLayer; media: Record<string, Media> }) {

@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { X, ArrowRight } from "lucide-react";
 import type { NavLink } from "@/lib/content/queries";
 import { useSmoothScroll } from "@/lib/motion/SmoothScroll";
@@ -10,7 +9,18 @@ import { useSmoothScroll } from "@/lib/motion/SmoothScroll";
 /** Full-screen Fresh Canopy drawer. Links stagger in; Join pinned to the bottom. */
 export function MobileDrawer({ open, onClose, links, siteName, pathname }: { open: boolean; onClose: () => void; links: NavLink[]; siteName: string; pathname: string }) {
   const panel = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  // Keep mounted briefly after close so the exit animation can play.
+  const [state, setState] = useState<"closed" | "open" | "closing">("closed");
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (prevOpen !== open) {
+    setPrevOpen(open);
+    setState(open ? "open" : "closing");
+  }
+  useEffect(() => {
+    if (state !== "closing") return;
+    const t = setTimeout(() => setState("closed"), 400);
+    return () => clearTimeout(t);
+  }, [state]);
   const scroll = useSmoothScroll();
 
   useEffect(() => {
@@ -44,25 +54,18 @@ export function MobileDrawer({ open, onClose, links, siteName, pathname }: { ope
     };
   }, [open, onClose, scroll]);
 
-  const item = {
-    hidden: { y: reduced ? 0 : "110%", opacity: reduced ? 0 : 1 },
-    show: (i: number) => ({ y: 0, opacity: 1, transition: { delay: reduced ? 0 : 0.12 + i * 0.06, duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } }),
-  };
-
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
+    <>
+      {state !== "closed" && (
+        <div
           id="mobile-drawer"
+          data-state={state}
           ref={panel}
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
           data-layer="canopy"
-          className="fixed inset-0 z-[60] flex flex-col overflow-y-auto px-gutter pb-6 pt-4 lg:hidden"
-          initial={{ clipPath: reduced ? "inset(0 0 0 0)" : "inset(0 0 100% 0)", opacity: reduced ? 0 : 1 }}
-          animate={{ clipPath: "inset(0 0 0% 0)", opacity: 1, transition: { duration: reduced ? 0.15 : 0.55, ease: [0.65, 0, 0.35, 1] } }}
-          exit={{ clipPath: reduced ? "inset(0 0 0 0)" : "inset(0 0 100% 0)", opacity: reduced ? 0 : 1, transition: { duration: reduced ? 0.15 : 0.4, ease: [0.65, 0, 0.35, 1] } }}
+          className="sv-drawer fixed inset-0 z-[60] flex flex-col overflow-y-auto px-gutter pb-6 pt-4 lg:hidden"
         >
           <div className="flex items-center justify-between">
             <span className="text-[1.35rem] font-semibold tracking-[-0.03em] text-white">{siteName}</span>
@@ -76,7 +79,7 @@ export function MobileDrawer({ open, onClose, links, siteName, pathname }: { ope
             <ul className="space-y-1">
               {[{ label: "Home", href: "/" }, ...links].map((l, i) => (
                 <li key={l.href} className="overflow-hidden">
-                  <motion.div custom={i} variants={item} initial="hidden" animate="show">
+                  <div className="sv-drawer-item" style={{ animationDelay: `${0.12 + i * 0.06}s` }}>
                     <Link
                       href={l.href}
                       onClick={onClose}
@@ -86,15 +89,15 @@ export function MobileDrawer({ open, onClose, links, siteName, pathname }: { ope
                       {l.label}
                       <ArrowRight className="size-5 opacity-60" aria-hidden />
                     </Link>
-                  </motion.div>
+                  </div>
                 </li>
               ))}
             </ul>
-            <motion.div custom={links.length + 1} variants={item} initial="hidden" animate="show" className="mt-6">
+            <div className="sv-drawer-item mt-6" style={{ animationDelay: `${0.12 + (links.length + 1) * 0.06}s` }}>
               <Link href="/login" onClick={onClose} className="inline-flex min-h-11 items-center text-lead text-white/85 underline-offset-4 hover:underline">
                 Member Login
               </Link>
-            </motion.div>
+            </div>
           </nav>
 
           <Link
@@ -105,8 +108,8 @@ export function MobileDrawer({ open, onClose, links, siteName, pathname }: { ope
           >
             Join Springvilla <ArrowRight className="size-5" aria-hidden />
           </Link>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

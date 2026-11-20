@@ -3,13 +3,12 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { RouteChange } from "./RouteChange";
-import { animate } from "motion";
 import { prefersReducedMotion } from "./useReducedMotion";
 
 /**
  * Fresh Canopy curtain wipe between public routes (~600ms total).
  * Never runs on the initial load, so it cannot delay first paint.
- * Motion owns the curtain element exclusively.
+ * Uses the Web Animations API (no animation library in the public bundle).
  */
 export function PageTransition() {
   const curtain = useRef<HTMLDivElement>(null);
@@ -31,7 +30,7 @@ export function PageTransition() {
       pending.current = true;
       const el = curtain.current;
       el.style.transformOrigin = "50% 100%";
-      animate(el, { scaleY: [0, 1] }, { duration: 0.32, ease: [0.65, 0, 0.35, 1] }).then(() => {
+      el.animate([{ transform: "scaleY(0)" }, { transform: "scaleY(1)" }], { duration: 320, easing: "cubic-bezier(0.65,0,0.35,1)", fill: "forwards" }).finished.then(() => {
         router.push(url.pathname + url.search + url.hash);
       });
     };
@@ -48,7 +47,7 @@ export function PageTransition() {
     pending.current = false;
     const el = curtain.current;
     el.style.transformOrigin = "50% 0%";
-    animate(el, { scaleY: [1, 0] }, { duration: 0.34, ease: [0.16, 1, 0.3, 1], delay: 0.05 });
+    el.animate([{ transform: "scaleY(1)" }, { transform: "scaleY(0)" }], { duration: 340, delay: 50, easing: "cubic-bezier(0.16,1,0.3,1)", fill: "forwards" });
   }, []);
 
   return (

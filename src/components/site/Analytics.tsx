@@ -19,7 +19,7 @@ export function Analytics({ enabled, bannerEnabled, bannerText }: { enabled: boo
     if (!enabled) return;
     const gpc = (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl;
     if (gpc && !readConsent()) document.cookie = `${COOKIE}=denied; path=/; max-age=31536000; samesite=lax`;
-    const t = setTimeout(() => setShowBanner(bannerEnabled && !readConsent()), 1200);
+    const t = setTimeout(() => setShowBanner(bannerEnabled && !readConsent()), 0);
     const reopen = () => setShowBanner(true);
     window.addEventListener("sv:consent", reopen);
 

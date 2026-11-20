@@ -4,7 +4,7 @@ import { StaggerCards } from "@/lib/motion";
 import { getFeaturedPost, searchPosts, getUpcomingEvents, getNews } from "@/lib/content/collections";
 import { ArticleCard, EventCard, NewsCard } from "@/components/content/cards";
 import type { SectionContent } from "@/lib/content/schemas";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 
 /** 06 Ideas and happenings: live from the database, with admin override for the featured article. */
 export async function IdeasHappenings({ content, layer }: { content: SectionContent<"home.ideas">; layer: PaletteLayer }) {

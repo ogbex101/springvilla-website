@@ -5,7 +5,7 @@ import { getOffices } from "@/lib/content/collections";
 import { OfficeSearch } from "@/components/content/OfficeSearch";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 
 /** 07 Find your place: office search + map, warm photo, application preview, honest enquiry note. */
 export async function FindPlace({ content, layer, media }: { content: SectionContent<"home.find_place">; layer: PaletteLayer; media: Record<string, Media> }) {

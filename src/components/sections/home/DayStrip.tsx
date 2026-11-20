@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { MediaFrame } from "@/components/ui";
-import { gsap, useGSAP } from "@/lib/motion/gsap";
+import { useGsap } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "@/lib/motion/useReducedMotion";
 import type { Media } from "@/lib/content/media-types";
 
@@ -11,8 +11,8 @@ type Chapter = { title: string; body: string; image: string | null };
 /** Optional "A day at Springvilla": pinned horizontal chapter strip on desktop; a swipeable row on touch. */
 export function DayStrip({ heading, chapters, media }: { heading: string; chapters: Chapter[]; media: Record<string, Media> }) {
   const root = useRef<HTMLDivElement>(null);
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap }) => {
       const el = root.current;
       if (!el || prefersReducedMotion()) return;
       const mm = gsap.matchMedia();

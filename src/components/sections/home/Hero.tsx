@@ -6,10 +6,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Pause, Play, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Media } from "@/lib/content/media-types";
 import type { SectionContent } from "@/lib/content/schemas";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 import { BrandField } from "@/components/ui/BrandField";
 import { renderHighlighted } from "@/components/ui/DisplayHeading";
-import { gsap, SplitText, useGSAP, markReady } from "@/lib/motion/gsap";
+import { useGsap } from "@/lib/motion/gsap";
 import { prefersReducedMotion, saveDataEnabled } from "@/lib/motion/useReducedMotion";
 import { useSmoothScroll } from "@/lib/motion/SmoothScroll";
 import { MagneticButton } from "@/lib/motion/MagneticButton";
@@ -92,31 +92,16 @@ export function Hero({ content, poster, videoDesktop, videoDesktopWebm, videoMob
     }
   }, []);
 
-  // Entrance + scroll hand-off.
-  useGSAP(
-    () => {
+  // Entrance is CSS (first paint). GSAP only drives the scroll hand-off to section 02.
+  useGsap(
+    ({ gsap }) => {
       const el = root.current;
-      if (!el) return;
+      if (!el || prefersReducedMotion()) return;
       const q = gsap.utils.selector(el);
-      const gated = q("[data-reveal]");
-      if (prefersReducedMotion()) {
-        gated.forEach(markReady);
-        return;
-      }
-      const split = SplitText.create(q("[data-hero-title]")[0], { type: "lines", mask: "lines", linesClass: "sv-split-line" });
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-      tl.from(q("[data-hero-eyebrow]"), { opacity: 0, y: 12, duration: 0.6 }, 0)
-        .from(split.lines, { yPercent: 110, rotate: 2, transformOrigin: "0% 100%", duration: 1, stagger: 0.08 }, 0.12)
-        .from(q("[data-hero-after]"), { opacity: 0, y: 24, duration: 0.8, stagger: 0.08, ease: "power3.out" }, 0.6)
-        .from(q("[data-hero-badge]"), { opacity: 0, scale: 0.6, rotate: -40, duration: 1, ease: "expo.out" }, 1.1);
-      gated.forEach(markReady);
-
-      // Scroll: media scales and darkens, copy drifts up and fades.
       const st = { trigger: el, start: "top top", end: "bottom top", scrub: true };
       gsap.to(q("[data-hero-media]"), { scale: 1.08, ease: "none", scrollTrigger: st });
       gsap.to(q("[data-hero-dim]"), { opacity: 0.45, ease: "none", scrollTrigger: st });
       gsap.to(q("[data-hero-copy]"), { yPercent: -30, opacity: 0, ease: "none", scrollTrigger: { ...st, end: "70% top" } });
-      return () => split.revert();
     },
     { scope: root },
   );
@@ -178,20 +163,24 @@ export function Hero({ content, poster, videoDesktop, videoDesktopWebm, videoMob
       {/* Copy layer: real HTML, never baked into the video */}
       <div data-hero-copy className="mx-auto w-full max-w-[1440px] px-gutter pb-[max(5rem,12svh)] pt-32">
         {content.eyebrow && (
-          <p data-hero-eyebrow data-reveal className="sv-eyebrow flex items-center gap-3 text-lime">
+          <p className="sv-eyebrow sv-hero-fade flex items-center gap-3 text-lime" style={{ animationDuration: "0.6s" }}>
             <span aria-hidden className="h-px w-8 bg-current" />
             {content.eyebrow}
           </p>
         )}
-        <h1 id="hero-title" data-hero-title data-reveal className="mt-6 max-w-[14ch] text-display-xl font-semibold text-white">
-          {renderHighlighted(content.headline || " ", content.highlight)}
+        <h1 id="hero-title" className="mt-6 max-w-[14ch] text-display-xl font-semibold text-white">
+          {(content.headline || " ").split("\n").map((line, i) => (
+            <span key={i} className="sv-hero-line">
+              <span style={{ animationDelay: `${0.12 + i * 0.08}s` }}>{renderHighlighted(line, content.highlight)}</span>
+            </span>
+          ))}
         </h1>
         {content.body && (
-          <p data-hero-after data-reveal className="mt-7 max-w-[42ch] text-lead text-white/88">
+          <p className="sv-hero-fade mt-7 max-w-[42ch] text-lead text-white/88" style={{ animationDelay: "0.6s" }}>
             {content.body}
           </p>
         )}
-        <div data-hero-after data-reveal className="mt-9 flex flex-wrap items-center gap-3">
+        <div className="sv-hero-fade mt-9 flex flex-wrap items-center gap-3" style={{ animationDelay: "0.68s" }}>
           {hasCta(content.primaryCta) && (
             <MagneticButton>
               <Link href={content.primaryCta.href} onClick={onCta(content.primaryCta.href, "hero-primary")} className="group/btn inline-flex min-h-13 items-center gap-3 rounded-full bg-lime px-7 py-3.5 font-semibold text-canopy transition-shadow hover:shadow-lift">
@@ -211,7 +200,7 @@ export function Hero({ content, poster, videoDesktop, videoDesktopWebm, videoMob
 
       {/* Rotating badge (decorative) */}
       {content.badge && (
-        <div data-hero-badge data-reveal aria-hidden className="pointer-events-none absolute bottom-8 right-[max(1rem,var(--spacing-gutter))] hidden size-32 md:block lg:size-36">
+        <div aria-hidden className="sv-hero-badge pointer-events-none absolute bottom-8 right-[max(1rem,var(--spacing-gutter))] hidden size-32 md:block lg:size-36">
           <svg viewBox="0 0 120 120" className="size-full animate-spin-slow text-lime motion-reduce:animate-none">
             <defs>
               <path id="hero-badge-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" />

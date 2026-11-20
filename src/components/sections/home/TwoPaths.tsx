@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { Container, Eyebrow, ButtonLink, Chip, OutlineNumeral, MediaFrame, type PaletteLayer } from "@/components/ui";
-import { gsap, SplitText, useGSAP, markReady } from "@/lib/motion/gsap";
+import { markReady, useGsap } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "@/lib/motion/useReducedMotion";
 import { StaggerCards } from "@/lib/motion";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 import { cn } from "@/lib/utils";
 
 type Content = SectionContent<"home.two_paths">;
@@ -25,8 +25,8 @@ export function TwoPaths({ content, layer, media }: { content: Content; layer: P
   const root = useRef<HTMLElement>(null);
   const cards = content.cards.slice(0, 2);
 
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap, SplitText }) => {
       const el = root.current;
       if (!el) return;
       const q = gsap.utils.selector(el);

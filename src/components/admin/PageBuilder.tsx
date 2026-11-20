@@ -190,7 +190,7 @@ export function PageBuilder({ pageKey, route, initial, only, title }: { pageKey:
 function AddSection({ pageKey, onAdded }: { pageKey: string; onAdded: () => void }) {
   const [key, setKey] = useState("");
   const toast = useToast();
-  const options = (Object.keys(SECTION_SCHEMAS) as SectionKey[]).filter((k) => !k.startsWith("home."));
+  const options = (Object.keys(SECTION_SCHEMAS) as SectionKey[]).filter((k) => !k.startsWith("home.") && k !== "join_form" && k !== "contact_form");
   return (
     <div className="mt-4 flex gap-2">
       <label htmlFor="add-section" className="sr-only">Section type to add</label>

@@ -12,7 +12,9 @@ const full = process.env.FULL !== "0";
   const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM || "/opt/pw-browsers/chromium" });
   for (const p of paths.length ? paths : ["/"]) {
     for (const w of widths) {
-      const page = await browser.newPage({ viewport: { width: w, height: w < 500 ? 812 : w < 1000 ? 1024 : 900 }, deviceScaleFactor: Number(process.env.DSF || 1), reducedMotion: process.env.REDUCED ? "reduce" : "no-preference" });
+      const ctx = await browser.newContext({ viewport: { width: w, height: w < 500 ? 812 : w < 1000 ? 1024 : 900 }, deviceScaleFactor: Number(process.env.DSF || 1), reducedMotion: process.env.REDUCED ? "reduce" : "no-preference" });
+      await ctx.addCookies([{ name: "sv_consent", value: "denied", url: base }]);
+      const page = await ctx.newPage();
       const errors: string[] = [];
       page.on("pageerror", (e) => errors.push(e.message));
       page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
@@ -33,7 +35,7 @@ const full = process.env.FULL !== "0";
       const name = (p === "/" ? "home" : p.replace(/^\//, "").replace(/[\/?=&]/g, "_")) + `-${w}.png`;
       await page.screenshot({ path: path.join(out, name), fullPage: full });
       console.log(name, errors.length ? "ERRORS: " + errors.slice(0, 3).join(" | ") : "ok");
-      await page.close();
+      await ctx.close();
     }
   }
   await browser.close();

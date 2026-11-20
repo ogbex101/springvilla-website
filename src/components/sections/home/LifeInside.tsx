@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Container, Section, Eyebrow, ButtonLink, Chip, type PaletteLayer } from "@/components/ui";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 import { formatDate, cn } from "@/lib/utils";
 import { MosaicMotion } from "./MosaicMotion";
 import { DayStrip } from "./DayStrip";

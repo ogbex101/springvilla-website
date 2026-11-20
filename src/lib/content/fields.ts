@@ -93,5 +93,4 @@ export const f = {
     z.array(z.object(shape)).max(max).default([]).meta(meta({ widget: "list", label, help, itemLabel, max })),
 };
 
-export type Cta = { label: string; href: string };
-export const hasCta = (c: Cta | null | undefined): c is Cta => Boolean(c && c.label && c.href);
+export { hasCta, type Cta } from "./cta";

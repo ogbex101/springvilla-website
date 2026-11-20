@@ -319,3 +319,42 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+/* --------------------------------------------------------------------------
+   Hero entrance: pure CSS so it starts at first paint (no JS gate, LCP-safe).
+   Copy is opaque from the first frame (transform-only), so it is the LCP paint.
+   -------------------------------------------------------------------------- */
+@keyframes sv-rise-line {
+  from { transform: translate3d(0, 105%, 0) rotate(2deg); }
+  to { transform: none; }
+}
+/* Transform-only rise: text is fully opaque from the first frame so it counts as LCP immediately. */
+@keyframes sv-fade-up {
+  from { transform: translate3d(0, 28px, 0); }
+  to { transform: none; }
+}
+@keyframes sv-badge-in {
+  from { opacity: 0.001; transform: scale(0.6) rotate(-40deg); }
+  to { opacity: 1; transform: none; }
+}
+.sv-hero-line { display: block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.sv-hero-line > span { display: inline-block; transform-origin: 0 100%; animation: sv-rise-line 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.sv-hero-fade { animation: sv-fade-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) both; }
+.sv-hero-badge { animation: sv-badge-in 1s cubic-bezier(0.16, 1, 0.3, 1) 1.1s both; }
+@media (prefers-reduced-motion: reduce) {
+  .sv-hero-line > span, .sv-hero-fade, .sv-hero-badge { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* Mobile drawer (CSS only) */
+@keyframes sv-drawer-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes sv-drawer-out { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); } }
+@keyframes sv-link-in { from { transform: translate3d(0, 110%, 0); } to { transform: none; } }
+.sv-drawer[data-state="open"] { animation: sv-drawer-in 0.55s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.sv-drawer[data-state="closing"] { animation: sv-drawer-out 0.4s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.sv-drawer-item { animation: sv-link-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .sv-drawer[data-state], .sv-drawer-item { animation: none !important; }
+}
+@keyframes sv-img-settle { from { transform: scale(1.08); } to { transform: none; } }
+.sv-img-settle [data-reveal-inner] { animation: sv-img-settle 1.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .sv-img-settle [data-reveal-inner] { animation: none; } }

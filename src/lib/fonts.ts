@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 export const sans = localFont({
   src: [
     { path: "../fonts/instrument-sans-latin-wght-normal.woff2", weight: "400 700", style: "normal" },
-    { path: "../fonts/instrument-sans-latin-wght-italic.woff2", weight: "400 700", style: "italic" },
   ],
   variable: "--font-sans-face",
   display: "swap",
@@ -17,5 +16,7 @@ export const serif = localFont({
   ],
   variable: "--font-serif-face",
   display: "swap",
+  // Accent-only face: don't compete with the body font for early bandwidth.
+  preload: false,
   fallback: ["Georgia", "Times New Roman", "serif"],
 });

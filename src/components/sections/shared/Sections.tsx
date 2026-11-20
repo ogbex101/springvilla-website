@@ -4,7 +4,7 @@ import { Container, Section, ButtonLink, MediaFrame, Chip, OutlineNumeral, type 
 import { RevealImage, RevealText, StaggerCards, DrawLine } from "@/lib/motion";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 import { SafeHtml } from "@/components/site/SafeHtml";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";

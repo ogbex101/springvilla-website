@@ -40,7 +40,7 @@ The migration creates them; check under **Storage** that these exist:
 
 ## C. Create the first super admin
 
-1. Visit `/admin/login` → it says no account exists for unknown emails, so first create your user: in Supabase **Authentication → Users → Add user → Create new user**, enter `SUPER_ADMIN_EMAIL` and a strong password, tick **Auto confirm**.
+1. Create your user in Supabase: **Authentication → Users → Add user → Create new user**, enter `SUPER_ADMIN_EMAIL` and a strong password (12+ characters), tick **Auto confirm**.
 2. Run:
    ```bash
    npm run seed:admin
@@ -63,6 +63,17 @@ Fill these in the admin; until then each module hides itself.
 - [ ] Privacy policy and terms reviewed by a lawyer (currently marked "pending legal review")
 - [ ] Legal entity name and registration details for the footer disclaimer
 
-## E. Deploy (Vercel)
+## E. Things I could not verify in the build environment
 
-See the final section of `docs/ADMIN_GUIDE.md` → "Deploying".
+- [ ] **Run the end-to-end admin tests against your real Supabase project.** Docker images and a local Supabase stack were not available in the build environment, so the following are written and typechecked but have only been verified up to the database layer (the 66 RLS/permission tests pass on real Postgres 16):
+  - admin login, MFA enrolment, editing → publishing → seeing it live, media upload with WebP/AVIF processing, the join form saving to the inbox with duplicate protection.
+  - How: create a central admin user (not a super admin, which needs a TOTP code), then run
+    ```bash
+    E2E_ADMIN_EMAIL=you@example.com E2E_ADMIN_PASSWORD='…' npx playwright test
+    ```
+- [ ] **Check the blueprint against the build.** The page structure for /discover (9 parts), /life-here, the office page (10 parts) and the join form fields (12.2/12.3) follow the brief and CLAUDE.md, not the blueprint PDF (which wasn't supplied). Adjust copy in the admin; tell a developer if a section type is missing.
+- [ ] Hero video, poster and all photos (none are bundled; abstract brand fields show until you upload).
+
+## F. Deploy (Vercel)
+
+See the final section of `docs/ADMIN_GUIDE.md` → "Deploying". Short version: import the repo in Vercel, add the env vars from `.env.example`, deploy, add your domain, then set the Supabase Site URL and redirect URL.

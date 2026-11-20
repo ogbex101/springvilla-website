@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP } from "./gsap";
+import { useGsap } from "./gsap";
 import { prefersReducedMotion } from "./useReducedMotion";
 
 /**
@@ -10,8 +10,8 @@ import { prefersReducedMotion } from "./useReducedMotion";
  */
 export function DrawLine({ children, className, start = "top 75%", end = "bottom 60%", scrub = true }: { children: ReactNode; className?: string; start?: string; end?: string; scrub?: boolean | number }) {
   const ref = useRef<HTMLDivElement>(null);
-  useGSAP(
-    () => {
+  useGsap(
+    ({ gsap }) => {
       const root = ref.current;
       if (!root || prefersReducedMotion()) return;
       const paths = root.querySelectorAll<SVGGeometryElement>("[data-draw]");

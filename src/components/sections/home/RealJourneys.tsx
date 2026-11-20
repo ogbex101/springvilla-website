@@ -5,7 +5,7 @@ import { StaggerCards } from "@/lib/motion";
 import { getJourneys } from "@/lib/content/collections";
 import { Timeline } from "@/components/content/Timeline";
 import type { SectionContent } from "@/lib/content/schemas";
-import { hasCta } from "@/lib/content/fields";
+import { hasCta } from "@/lib/content/cta";
 
 /** 05 Real journeys: verified, consented journeys only. No carousel. Hides when empty unless editorial text is set. */
 export async function RealJourneys({ content, layer }: { content: SectionContent<"home.journeys">; layer: PaletteLayer }) {
