@@ -1,0 +1,82 @@
+"use client";
+
+import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
+import Lenis from "lenis";
+import { usePathname } from "next/navigation";
+import { gsap, ScrollTrigger } from "./gsap";
+import { useReducedMotion } from "./useReducedMotion";
+
+type ScrollApi = {
+  lenis: Lenis | null;
+  scrollTo: (target: string | number | HTMLElement, opts?: { offset?: number }) => void;
+  stop: () => void;
+  start: () => void;
+};
+
+const ScrollContext = createContext<ScrollApi>({
+  lenis: null,
+  scrollTo: (target) => {
+    const el = typeof target === "string" ? document.querySelector(target) : target;
+    if (typeof el === "number") window.scrollTo({ top: el, behavior: "smooth" });
+    else (el as HTMLElement | null)?.scrollIntoView({ behavior: "smooth" });
+  },
+  stop: () => {},
+  start: () => {},
+});
+
+export const useSmoothScroll = () => useContext(ScrollContext);
+
+/**
+ * Lenis smooth scroll synced to GSAP's ticker so ScrollTrigger reads the same
+ * scroll position. Off for reduced motion and inside /admin and /member.
+ */
+export function SmoothScroll({ children }: { children: ReactNode }) {
+  const reduced = useReducedMotion();
+  const pathname = usePathname();
+  const disabled = reduced || pathname.startsWith("/admin") || pathname.startsWith("/member");
+  const lenisRef = useRef<Lenis | null>(null);
+  const fallback = useContext(ScrollContext);
+  const api = useMemo<ScrollApi>(
+    () => ({
+      get lenis() {
+        return lenisRef.current;
+      },
+      scrollTo: (target, opts) => {
+        const l = lenisRef.current;
+        if (l) l.scrollTo(target as never, { offset: opts?.offset ?? 0, duration: 1.2 });
+        else fallback.scrollTo(target, opts);
+      },
+      stop: () => lenisRef.current?.stop(),
+      start: () => lenisRef.current?.start(),
+    }),
+    [fallback],
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.add("motion-ok");
+    if (disabled) return;
+
+    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, syncTouch: false });
+    lenisRef.current = lenis;
+    lenis.on("scroll", ScrollTrigger.update);
+    const tick = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      gsap.ticker.remove(tick);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, [disabled]);
+
+  // Reset scroll on route change and recalculate triggers once the new page has laid out.
+  useEffect(() => {
+    if (window.location.hash) return;
+    lenisRef.current?.scrollTo(0, { immediate: true });
+    const id = window.setTimeout(() => ScrollTrigger.refresh(), 120);
+    return () => window.clearTimeout(id);
+  }, [pathname]);
+
+  return <ScrollContext.Provider value={api}>{children}</ScrollContext.Provider>;
+}

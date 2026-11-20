@@ -1,0 +1,311 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Springvilla design tokens. Brand hex values from CLAUDE.md section 4.
+   ========================================================================== */
+
+:root {
+  /* Brand palette */
+  --sv-canopy: #2d3e2c; /* Fresh Canopy  – Growth / Primary */
+  --sv-lime: #e4fd97; /* Lime Sprout   – Growth / Primary accent */
+  --sv-cyprus: #004741; /* Cyprus        – Authority */
+  --sv-sand: #f0ede4; /* Sand          – Authority */
+  --sv-tiffany: #21f1a8; /* Tiffany       – Signal / Tech */
+  --sv-dark: #171717; /* Dark Gray     – Signal / Tech */
+  --sv-milky: #fffdf1; /* Milky         – Friendly Growth */
+  --sv-mantis: #59c749; /* Mantis        – Friendly Growth (decorative, never text on Milky) */
+  --sv-silver: #141414; /* Silver Black  – High Energy (rare) */
+  --sv-moss: #2bee34; /* Luminous Moss – High Energy (rare) */
+  --sv-white: #ffffff;
+
+  /* Default surface = Milky / Fresh Canopy ink */
+  --bg: var(--sv-milky);
+  --fg: var(--sv-canopy);
+  --muted: color-mix(in srgb, var(--sv-canopy) 80%, var(--sv-milky));
+  --accent: var(--sv-canopy);
+  --accent-fg: var(--sv-lime);
+  --line: color-mix(in srgb, var(--sv-canopy) 18%, transparent);
+  --chip: color-mix(in srgb, var(--sv-canopy) 8%, transparent);
+
+  /* Easing */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Header height used for anchor offsets */
+  --header-h: 5rem;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+/* Palette layers. A section picks ONE layer; each layer is at most two brand palette layers. */
+[data-layer="canopy"] {
+  --bg: var(--sv-canopy);
+  --fg: var(--sv-white);
+  --muted: color-mix(in srgb, var(--sv-white) 78%, var(--sv-canopy));
+  --accent: var(--sv-lime);
+  --accent-fg: var(--sv-canopy);
+  --line: color-mix(in srgb, var(--sv-lime) 22%, transparent);
+  --chip: color-mix(in srgb, var(--sv-lime) 12%, transparent);
+}
+[data-layer="sand"] {
+  --bg: var(--sv-sand);
+  --fg: var(--sv-cyprus);
+  --muted: color-mix(in srgb, var(--sv-cyprus) 82%, var(--sv-sand));
+  --accent: var(--sv-cyprus);
+  --accent-fg: var(--sv-sand);
+  --line: color-mix(in srgb, var(--sv-cyprus) 20%, transparent);
+  --chip: color-mix(in srgb, var(--sv-cyprus) 8%, transparent);
+}
+[data-layer="cyprus"] {
+  --bg: var(--sv-cyprus);
+  --fg: var(--sv-sand);
+  --muted: color-mix(in srgb, var(--sv-sand) 78%, var(--sv-cyprus));
+  --accent: var(--sv-lime);
+  --accent-fg: var(--sv-cyprus);
+  --line: color-mix(in srgb, var(--sv-sand) 22%, transparent);
+  --chip: color-mix(in srgb, var(--sv-sand) 10%, transparent);
+}
+[data-layer="milky"] {
+  --bg: var(--sv-milky);
+  --fg: var(--sv-canopy);
+  --muted: color-mix(in srgb, var(--sv-canopy) 80%, var(--sv-milky));
+  --accent: var(--sv-canopy);
+  --accent-fg: var(--sv-lime);
+  --line: color-mix(in srgb, var(--sv-canopy) 16%, transparent);
+  --chip: color-mix(in srgb, var(--sv-mantis) 18%, transparent);
+}
+[data-layer="signal"] {
+  --bg: var(--sv-dark);
+  --fg: var(--sv-white);
+  --muted: color-mix(in srgb, var(--sv-white) 72%, var(--sv-dark));
+  --accent: var(--sv-tiffany);
+  --accent-fg: var(--sv-dark);
+  --line: color-mix(in srgb, var(--sv-tiffany) 24%, transparent);
+  --chip: color-mix(in srgb, var(--sv-tiffany) 12%, transparent);
+}
+[data-layer="energy"] {
+  --bg: var(--sv-silver);
+  --fg: var(--sv-white);
+  --muted: color-mix(in srgb, var(--sv-white) 72%, var(--sv-silver));
+  --accent: var(--sv-moss);
+  --accent-fg: var(--sv-silver);
+  --line: color-mix(in srgb, var(--sv-moss) 24%, transparent);
+  --chip: color-mix(in srgb, var(--sv-moss) 12%, transparent);
+}
+
+@theme inline {
+  --color-canopy: var(--sv-canopy);
+  --color-lime: var(--sv-lime);
+  --color-cyprus: var(--sv-cyprus);
+  --color-sand: var(--sv-sand);
+  --color-tiffany: var(--sv-tiffany);
+  --color-dark: var(--sv-dark);
+  --color-milky: var(--sv-milky);
+  --color-mantis: var(--sv-mantis);
+  --color-silver: var(--sv-silver);
+  --color-moss: var(--sv-moss);
+
+  /* Layer-aware semantic colours */
+  --color-surface: var(--bg);
+  --color-ink: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-line: var(--line);
+  --color-chip: var(--chip);
+
+  --font-sans: var(--font-sans-face), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-face), ui-serif, Georgia, serif;
+
+  /* Fluid type scale (375px → 1440px) */
+  --text-display-xl: clamp(3.25rem, 1.6rem + 7.2vw, 9.5rem);
+  --text-display-xl--line-height: 0.92;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-l: clamp(2.6rem, 1.5rem + 4.8vw, 6.5rem);
+  --text-display-l--line-height: 0.95;
+  --text-display-l--letter-spacing: -0.03em;
+  --text-display-m: clamp(2.1rem, 1.4rem + 3vw, 4.5rem);
+  --text-display-m--line-height: 1;
+  --text-display-m--letter-spacing: -0.025em;
+  --text-display-s: clamp(1.65rem, 1.25rem + 1.7vw, 2.75rem);
+  --text-display-s--line-height: 1.08;
+  --text-display-s--letter-spacing: -0.02em;
+  --text-lead: clamp(1.125rem, 1.02rem + 0.45vw, 1.4rem);
+  --text-lead--line-height: 1.5;
+  --text-body: clamp(1rem, 0.96rem + 0.15vw, 1.0625rem);
+  --text-body--line-height: 1.65;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.5;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.45;
+  --text-eyebrow: 0.8125rem;
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.14em;
+  --text-numeral: clamp(6rem, 3rem + 12vw, 15rem);
+  --text-numeral--line-height: 0.8;
+
+  /* Spacing rhythm */
+  --spacing-gutter: clamp(1rem, 0.5rem + 2.2vw, 2.5rem);
+  --spacing-section: clamp(5rem, 3rem + 8vw, 11rem);
+  --spacing-section-sm: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+
+  /* Radii (8–20px) */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgb(20 20 20 / 0.06), 0 8px 24px -12px rgb(20 20 20 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(20 20 20 / 0.06), 0 22px 48px -20px rgb(20 20 20 / 0.32);
+  --shadow-nav: 0 10px 40px -12px rgb(10 20 10 / 0.45);
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: sv-marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-spin-slow: spin 18s linear infinite;
+}
+
+@keyframes sv-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes sv-grain {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+}
+@keyframes sv-drift {
+  0% { transform: translate3d(-10%, -6%, 0) scale(1); }
+  50% { transform: translate3d(8%, 6%, 0) scale(1.15); }
+  100% { transform: translate3d(-10%, -6%, 0) scale(1); }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background: var(--sv-milky);
+    color: var(--sv-canopy);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.65;
+  }
+  [data-layer] {
+    background-color: var(--bg);
+    color: var(--fg);
+  }
+  ::selection {
+    background: var(--sv-lime);
+    color: var(--sv-canopy);
+  }
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  [data-layer="canopy"] :focus-visible,
+  [data-layer="cyprus"] :focus-visible {
+    outline-color: var(--sv-lime);
+  }
+  [data-layer="signal"] :focus-visible {
+    outline-color: var(--sv-tiffany);
+  }
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  img, video {
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  .sv-eyebrow {
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .sv-serif-accent {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .sv-outline-numeral {
+    -webkit-text-stroke: 1.5px currentColor;
+    color: transparent;
+    font-variant-numeric: tabular-nums;
+  }
+  .sv-grain::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.09;
+    mix-blend-mode: overlay;
+    animation: sv-grain 8s steps(6) infinite;
+  }
+  .sv-link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 280ms var(--ease-out-quart);
+  }
+  .sv-link-underline:hover,
+  .sv-link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+  .sv-prose {
+    font-size: var(--text-body);
+    line-height: 1.75;
+    max-width: 68ch;
+  }
+  .sv-prose > * + * { margin-top: 1.1em; }
+  .sv-prose h2 { font-size: var(--text-display-s); line-height: 1.1; margin-top: 2em; font-weight: 600; letter-spacing: -0.02em; }
+  .sv-prose h3 { font-size: 1.35rem; margin-top: 1.6em; font-weight: 600; }
+  .sv-prose a { text-decoration: underline; text-underline-offset: 3px; }
+  .sv-prose ul { list-style: disc; padding-left: 1.25em; }
+  .sv-prose ol { list-style: decimal; padding-left: 1.25em; }
+  .sv-prose blockquote { border-left: 3px solid var(--accent); padding-left: 1.25em; font-family: var(--font-serif); font-style: italic; font-size: 1.4em; line-height: 1.4; }
+  .sv-prose img { border-radius: var(--radius-md); }
+  .sv-prose .key-takeaways { background: var(--chip); border-radius: var(--radius-lg); padding: 1.5em; }
+}
+
+/* --------------------------------------------------------------------------
+   Reveal gating (CLAUDE.md §5). Content is visible without JS. With JS,
+   elements marked data-reveal are hidden until their motion component has
+   taken over (data-reveal-ready). A failsafe class shows everything if the
+   motion engine has not booted within 3.5s.
+   -------------------------------------------------------------------------- */
+html.js:not(.reveal-failsafe) [data-reveal]:not([data-reveal-ready]) {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] { opacity: 1 !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
