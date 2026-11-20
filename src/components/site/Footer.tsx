@@ -3,6 +3,7 @@ import { Container } from "@/components/ui";
 import { RevealText } from "@/lib/motion";
 import { renderHighlighted } from "@/components/ui/DisplayHeading";
 import { ConsentLink } from "./Analytics";
+import { Logo } from "./Logo";
 import type { Chrome } from "@/lib/content/queries";
 
 /**
@@ -22,6 +23,8 @@ export function Footer({ chrome }: { chrome: Chrome }) {
         <h2 id="footer-heading" className="sr-only">
           Site footer
         </h2>
+        {/* Footer is Fresh Canopy: an approved logo surface. */}
+        {chrome.logo && <Logo logo={chrome.logo} siteName={chrome.siteName} onBrandSurface size="lg" className="-m-4 mb-10" />}
         {chrome.footer.closingStatement && (
           <RevealText as="p" className="max-w-[16ch] text-display-l font-semibold text-white">
             {renderHighlighted(chrome.footer.closingStatement, chrome.footer.highlight)}

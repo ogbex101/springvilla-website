@@ -1,7 +1,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { Clapperboard, FilePlus2, CalendarPlus, Inbox, Mail, ShieldCheck, CalendarClock, CalendarDays } from "lucide-react";
+import { Clapperboard, FilePlus2, CalendarPlus, Inbox, Mail, ShieldCheck, CalendarClock, CalendarDays, Building2, ImageOff, Hourglass } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/session";
 import { can } from "@/lib/auth/roles";
 import { getServerClient } from "@/lib/supabase/server";
@@ -11,6 +11,12 @@ import { formatDate } from "@/lib/utils";
 const Sparkline = dynamic(() => import("@/components/admin/Sparkline"));
 
 export const metadata = { title: "Dashboard" };
+
+function daysAgo(n: number) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString();
+}
 
 function Stat({ label, value, href, icon: Icon }: { label: string; value: number | null; href?: string; icon: typeof Inbox }) {
   const body = (
@@ -31,7 +37,8 @@ async function Dashboard({ searchParams }: { searchParams: Promise<{ denied?: st
   const db = await getServerClient();
   const head = { count: "exact" as const, head: true };
   const now = new Date().toISOString();
-  const [apps, enq, pendingPosts, pendingOffices, scheduled, events, visitors, activity] = await Promise.all([
+  const monthAgo = daysAgo(31);
+  const [apps, enq, pendingPosts, pendingOffices, scheduled, events, visitors, verifiedOffices, assetsNeedingWork, staleOffices, activity] = await Promise.all([
     can(s.roles, "inbox") ? db.from("join_applications").select("id", head).eq("status", "new") : null,
     can(s.roles, "inbox") ? db.from("contact_enquiries").select("id", head).eq("status", "new") : null,
     can(s.roles, "blog") ? db.from("blog_posts").select("id", head).in("status", ["in_review", "claims_review"]) : null,
@@ -39,6 +46,9 @@ async function Dashboard({ searchParams }: { searchParams: Promise<{ denied?: st
     can(s.roles, "blog") ? db.from("blog_posts").select("id", head).eq("status", "scheduled").gt("published_at", now) : null,
     can(s.roles, "events") ? db.from("events").select("id", head).eq("status", "published").gte("starts_at", now) : null,
     can(s.roles, "analytics") ? db.rpc("analytics_visitor_counts") : null,
+    can(s.roles, "settings") ? db.from("offices").select("id", head).eq("status", "published").eq("verification_status", "verified") : null,
+    can(s.roles, "media") ? db.from("media_assets").select("id", head).eq("bucket", "public-media").or("alt_text.is.null,alt_text.eq.,consent_confirmed.eq.false") : null,
+    can(s.roles, "offices") ? db.from("offices").select("id", head).or(`last_verified_at.is.null,last_verified_at.lt.${monthAgo}`) : null,
     can(s.roles, "audit") ? db.from("audit_log").select("id,actor_email,action,entity,after,before,created_at").order("created_at", { ascending: false }).limit(8) : null,
   ]);
   const v = visitors?.data as { today: number; d7: number; d30: number; spark: { day: string; views: number }[] } | null;
@@ -59,6 +69,9 @@ async function Dashboard({ searchParams }: { searchParams: Promise<{ denied?: st
         {(pendingPosts || pendingOffices) && <Stat label="Waiting for approval" value={pendingApprovals} href="/admin/articles?status=claims_review" icon={ShieldCheck} />}
         {scheduled && <Stat label="Scheduled articles" value={scheduled.count} href="/admin/articles?status=scheduled" icon={CalendarClock} />}
         {events && <Stat label="Upcoming events" value={events.count} href="/admin/events" icon={CalendarDays} />}
+        {verifiedOffices && <Stat label="Verified, published offices" value={verifiedOffices.count} href="/admin/offices" icon={Building2} />}
+        {staleOffices && <Stat label="Offices due a monthly check" value={staleOffices.count} href="/admin/offices" icon={Hourglass} />}
+        {assetsNeedingWork && <Stat label="Photos missing alt text or consent" value={assetsNeedingWork.count} href="/admin/media?consent=no" icon={ImageOff} />}
       </div>
       {v && (
         <Panel className="mt-6" title="Visitors" actions={<Link href="/admin/analytics" className="text-small underline">Full analytics</Link>}>

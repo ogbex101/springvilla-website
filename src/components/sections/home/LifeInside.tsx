@@ -82,7 +82,7 @@ export function LifeInside({ content, layer, media }: { content: SectionContent<
           </div>
         )}
       </Container>
-      {chapters.length > 0 && <DayStrip heading={content.dayHeading} chapters={chapters} media={media} />}
+      {chapters.length > 0 && <DayStrip heading={content.dayHeading} chapters={chapters} media={media} kind={content.dayKind} date={content.dayDate} />}
     </Section>
   );
 }

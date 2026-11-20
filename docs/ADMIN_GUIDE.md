@@ -87,6 +87,10 @@ Menu: **Stories & Ideas → Articles → New article**
 4. **Open preview** (right-hand panel) shows the article before it's published.
 5. Categories and tags are managed with the buttons at the top of the Articles list.
 
+Articles also have **Author role**, **Sources and citations** (required for factual, health or business advice), **Related articles** and **Review notes** for reviewers. A published article that is later updated can be marked **Revised**.
+
+**Journeys** follow the blueprint's story order: a one-line growth statement, starting point, challenge, what they did, support, what changed, optional quote and advice, then a timeline of dated updates. Choose how the person is named (full name, first name, initials, pseudonym or anonymous). If a story contains earnings, health, product-efficacy or other strong claims, tick **Contains … claims**: a central admin must then approve it. For anyone under 18, the consent record must also record a parent or guardian's consent.
+
 **Journeys** (Stories & Ideas → Journeys) need a **consent record** (create one under *Consent records* and upload the signed form) and the *verified* box ticked before they can be published. Use **Add dated update** to add milestones to the timeline. If consent is withdrawn, tick *Consent has been withdrawn* on the consent record and the linked journeys are unpublished automatically.
 
 **News** and **Events** work the same way. Event times are entered in the event's own timezone.
@@ -104,6 +108,10 @@ Menu: **People → Offices**
 
 ---
 
+### What an office page shows (blueprint §11.2)
+
+Each office page has ten parts, always in this order: 1 name, location and photo · 2 address and directions · 3 contact, preferred contact method and hours · 4 what visitors can expect · 5 local events and announcements · 6 representative (only if they consented) · 7 gallery with captions and dates · 8 visitor guidance (appointment, what to bring, eligibility and costs, once approved) · 9 "Ask about this office", "Plan a visit", "Apply with this office" · 10 last verified date and "Report incorrect details". Empty parts show an honest placeholder.
+
 ## 7. Handling applications and enquiries
 
 Menu: **People → Applications & enquiries**
@@ -115,7 +123,9 @@ Menu: **People → Applications & enquiries**
   - **Assigned to**: who is following up.
   - **Internal notes**: only staff see these, and each note is signed and dated.
 - **Export CSV** downloads what you're currently filtering (opens in Excel or Google Sheets).
-- Remember: an enquiry is not membership. Please reply to new applications within a few days.
+- Applications contain: name, email and/or phone, preferred contact method, city/state, preferred office (or "help me find one"), occupation (optional), interests, message (optional), privacy acknowledgement, the privacy-notice version they agreed to, and whether they opted in to updates. Only contact people about updates if they opted in.
+- Contact enquiries are routed by type: general, office information, partnership, media, product-related, privacy request and technical support.
+- Remember: an enquiry is not membership, and the site never promises a response time.
 
 ---
 

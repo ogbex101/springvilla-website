@@ -55,6 +55,15 @@ async function EventView({ params }: { params: Params }) {
       <Section layer="milky" spacing="sm">
         <Container size="narrow">
           {e.summary && <p className="text-lead">{e.summary}</p>}
+          {(e.category || e.organiser || e.capacity || e.eligibility || e.contact) && (
+            <dl className="mt-8 grid gap-4 rounded-xl border border-line p-6 text-small sm:grid-cols-2">
+              {e.category && <div><dt className="sv-eyebrow text-muted">Category</dt><dd className="mt-1">{e.category.replace(/_/g, " ")}</dd></div>}
+              {e.organiser && <div><dt className="sv-eyebrow text-muted">Organiser</dt><dd className="mt-1">{e.organiser}</dd></div>}
+              {e.eligibility && <div><dt className="sv-eyebrow text-muted">Who can attend</dt><dd className="mt-1">{e.eligibility}</dd></div>}
+              {e.capacity && <div><dt className="sv-eyebrow text-muted">Places</dt><dd className="mt-1">Limited to {e.capacity}</dd></div>}
+              {e.contact && <div className="sm:col-span-2"><dt className="sv-eyebrow text-muted">Questions</dt><dd className="mt-1">{e.contact}</dd></div>}
+            </dl>
+          )}
           <SafeHtml className="sv-prose mt-8" html={e.bodyHtml} />
         </Container>
       </Section>

@@ -193,6 +193,16 @@ async function main() {
     ok(o.rows[0].phone === "555" && o.rows[0].verification_status === "verified" && o.rows[0].pending_changes === null, "central approval applies pending changes and verifies");
   });
 
+  console.log("\nBlueprint rules (§10.4, §11.3, §12.2)");
+  ok(!(await (async () => { try { await db.query("insert into join_applications (full_name,city,interest,consent_privacy,email) values ('E','c','digital',true,'e@e')"); return false; } catch { return true; } })()), "join application accepts email only (no phone)");
+  ok(await (async () => { try { await db.query("insert into join_applications (full_name,city,interest,consent_privacy) values ('N','c','digital',true)"); return false; } catch { return true; } })(), "join application needs at least email or phone");
+  ok(await fails({ sub: officeAAdmin }, "update offices set lead_contact_name='New Lead' where id=$1", [officeA]), "office admin cannot change leader name directly (high-trust)");
+  ok(!(await fails({ sub: storyEd }, "with c as (insert into consent_records (subject_name, signed_on, subject_is_minor, guardian_consent) values ('Kid', current_date, true, true) returning id) insert into member_journeys (slug,title,status,verified,consent_record_id) select 'minor-ok','M','published',true,id from c")), "minor's journey publishes with guardian consent");
+  ok(await fails({ sub: storyEd }, "with c as (insert into consent_records (subject_name, signed_on, subject_is_minor) values ('Kid', current_date, true) returning id) insert into member_journeys (slug,title,status,verified,consent_record_id) select 'minor-no','M','published',true,id from c"), "minor's journey cannot publish without guardian consent");
+  ok(await fails({ sub: storyEd }, "with c as (insert into consent_records (subject_name, signed_on) values ('P', current_date) returning id) insert into member_journeys (slug,title,status,verified,consent_record_id,contains_claims) select 'claims','C','published',true,id,true from c"), "story editor cannot publish a journey with strong claims");
+  ok(!(await fails({ sub: centralId }, "with c as (insert into consent_records (subject_name, signed_on) values ('P', current_date) returning id) insert into member_journeys (slug,title,status,verified,consent_record_id,contains_claims) select 'claims2','C','published',true,id,true from c")), "central admin can approve and publish a journey with claims");
+  await as({}, async (q) => ok((await q("select growth_statement, quote from member_journeys")).rows !== undefined, "public can read journey story fields"));
+
   console.log("\nStorage");
   ok(!(await fails({ sub: officeAAdmin }, "insert into storage.objects (bucket_id, name, owner) values ('public-media','a.jpg',$1)", [officeAAdmin])), "office admin can upload public media");
   ok(await fails({ sub: memberA }, "insert into storage.objects (bucket_id, name, owner) values ('public-media','a.jpg',$1)", [memberA]), "member cannot upload public media");

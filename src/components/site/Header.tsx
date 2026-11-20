@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RouteChange } from "@/lib/motion/RouteChange";
 import { Menu } from "lucide-react";
@@ -9,8 +8,11 @@ import { cn } from "@/lib/utils";
 import type { Media } from "@/lib/content/media-types";
 import type { NavLink } from "@/lib/content/queries";
 import { MobileDrawer } from "./MobileDrawer";
+import { Logo } from "./Logo";
 
 const DARK_LAYERS = new Set(["canopy", "cyprus", "signal", "energy"]);
+/** Only these surfaces may carry the official logo (§15.2). */
+const LOGO_LAYERS = new Set(["canopy", "cyprus"]);
 
 export function Header({ siteName, logo, links, mobileLinks }: { siteName: string; logo: Media | null; links: NavLink[]; mobileLinks: NavLink[] }) {
   const [pathname, setPathname] = useState("");
@@ -22,6 +24,7 @@ export function Header({ siteName, logo, links, mobileLinks }: { siteName: strin
   const [floating, setFloating] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [onDark, setOnDark] = useState(true);
+  const [onLogoSurface, setOnLogoSurface] = useState(true);
   const lastY = useRef(0);
 
   useEffect(() => {
@@ -41,6 +44,7 @@ export function Header({ siteName, logo, links, mobileLinks }: { siteName: strin
         const el = document.elementsFromPoint(window.innerWidth / 2, 40).find((n) => !n.closest("header"));
         const layer = el?.closest<HTMLElement>("[data-layer]")?.dataset.layer;
         setOnDark(layer ? DARK_LAYERS.has(layer) : false);
+        setOnLogoSurface(layer ? LOGO_LAYERS.has(layer) : false);
       }
     };
     const onScroll = () => {
@@ -78,11 +82,8 @@ export function Header({ siteName, logo, links, mobileLinks }: { siteName: strin
           )}
         >
           <Link href="/" className="relative z-10 flex min-h-11 items-center gap-2 rounded-md" aria-label={`${siteName} home`}>
-            {logo ? (
-              <Image src={logo.url} alt="" width={logo.width ?? 160} height={logo.height ?? 40} className="h-8 w-auto lg:h-9" priority />
-            ) : (
-              <span className="text-[1.35rem] font-semibold tracking-[-0.03em]">{siteName}</span>
-            )}
+            {/* Floating bar is solid Fresh Canopy; otherwise only over a Canopy/Cyprus section. */}
+            <Logo logo={logo} siteName={siteName} onBrandSurface={floating || onLogoSurface} className="-m-2" />
           </Link>
 
           <nav aria-label="Main" className="hidden lg:block">
@@ -132,7 +133,7 @@ export function Header({ siteName, logo, links, mobileLinks }: { siteName: strin
           </div>
         </div>
       </header>
-      <MobileDrawer open={open} onClose={() => setOpen(false)} links={mobileLinks} siteName={siteName} pathname={pathname} />
+      <MobileDrawer open={open} onClose={() => setOpen(false)} links={mobileLinks} siteName={siteName} logo={logo} pathname={pathname} />
     </>
   );
 }

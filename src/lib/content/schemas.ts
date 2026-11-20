@@ -89,6 +89,11 @@ export const homeLifeInside = z.object({
   chips: f.stringList("Module chips"),
   cta: f.cta("Button"),
   dayHeading: f.text("'A day at Springvilla' heading", "Leave the chapters empty to hide this strip.", 120),
+  dayKind: f.select("What the day shows", [
+    { value: "illustrative", label: "An illustrative routine (labelled as such on the site)" },
+    { value: "documented", label: "One documented real day" },
+  ] as const, "illustrative", "Blueprint §9: never present a staged timeline as a verified schedule."),
+  dayDate: f.text("Date of the documented day", "Only for a documented real day, e.g. 14 March 2027.", 40),
   dayChapters: f.list("Day chapters", { title: f.text("Title", undefined, 40), body: f.textarea("Text", undefined, 300), image: f.image("Photo") }, "Chapter", undefined, 6),
 });
 
@@ -225,6 +230,16 @@ export const cardGrid = z.object({
   cards: f.list("Cards", { title: f.text("Title", undefined, 80), body: f.textarea("Text", undefined, 400), image: f.image("Image"), href: f.link("Link") }, "Card", undefined, 12),
 });
 
+export const comparisonTable = z.object({
+  ...anchor,
+  ...heading,
+  intro: f.textarea("Intro", undefined, 600),
+  col1: f.text("Column 1 heading", undefined, 40),
+  col2: f.text("Column 2 heading", undefined, 40),
+  col3: f.text("Column 3 heading", undefined, 40),
+  rows: f.list("Rows", { c1: f.text("Column 1", undefined, 80), c2: f.textarea("Column 2", undefined, 300), c3: f.textarea("Column 3", undefined, 300) }, "Row", undefined, 12),
+});
+
 export const ctaBand = z.object({
   ...heading,
   body: f.textarea("Body", undefined, 500),
@@ -249,11 +264,13 @@ export const joinForm = z.object({
   ...anchor,
   ...heading,
   intro: f.textarea("Intro", undefined, 600),
+  privacyExplanation: f.textarea("Why we ask for these details", "Shown above the form (blueprint §12.1: clear privacy explanation).", 600),
   enquiryNote: f.textarea("Note above the submit button", undefined, 400),
   successHeading: f.text("Success heading", undefined, 120),
   successBody: f.textarea("Success message", undefined, 600),
-  privacyLabel: f.textarea("Privacy consent label", undefined, 300),
-  contactLabel: f.textarea("Contact consent label", undefined, 300),
+  privacyLabel: f.textarea("Privacy acknowledgement label", undefined, 300),
+  marketingLabel: f.textarea("Updates opt-in label (unticked by default)", undefined, 300),
+  consentVersion: f.text("Privacy notice version", "Stored with each application, e.g. 2026-11-draft. Change it when the privacy policy changes.", 40),
 });
 
 export const contactForm = z.object({
@@ -261,13 +278,13 @@ export const contactForm = z.object({
   intro: f.textarea("Intro", undefined, 600),
   types: f.list("Enquiry types", {
     value: f.select("Queue", [
-      { value: "general", label: "General" },
-      { value: "office_visit", label: "Office visit" },
+      { value: "general", label: "General enquiry" },
+      { value: "office_information", label: "Office information" },
       { value: "partnership", label: "Partnership" },
       { value: "media", label: "Media" },
-      { value: "member_support", label: "Member support" },
-      { value: "feedback", label: "Feedback" },
-      { value: "safeguarding", label: "Safeguarding" },
+      { value: "product", label: "Product-related enquiry" },
+      { value: "privacy", label: "Privacy request" },
+      { value: "technical", label: "Technical support" },
     ] as const, "general"),
     label: f.text("Label", undefined, 60),
     description: f.text("Description", undefined, 160),
@@ -298,6 +315,7 @@ export const SECTION_SCHEMAS = {
   leadership,
   gallery,
   card_grid: cardGrid,
+  comparison_table: comparisonTable,
   cta_band: ctaBand,
   listing_intro: listingIntro,
   legal,
@@ -329,6 +347,7 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   leadership: "Leadership",
   gallery: "Photo gallery",
   card_grid: "Card grid",
+  comparison_table: "Comparison table",
   cta_band: "Call to action",
   listing_intro: "Listing intro",
   legal: "Legal text",

@@ -29,26 +29,25 @@ export async function submitJoin(input: JoinInput): Promise<FormResult> {
   if (!hasServiceRole()) return NOT_CONNECTED;
 
   const day = new Date().toISOString().slice(0, 10);
+  const contactKey = d.email || d.phone.replace(/\D/g, "");
   const { error } = await getServiceClient()
     .from("join_applications")
     .insert({
       full_name: d.fullName,
-      email: d.email,
-      phone: d.phone,
-      city: d.city,
-      state: d.state || null,
-      office_id: d.officeId || null,
-      interest: d.interest,
-      age_range: d.ageRange || null,
-      current_situation: d.currentSituation || null,
-      hoped_outcome: d.hopedOutcome || null,
-      how_heard: d.howHeard || null,
+      email: d.email || null,
+      phone: d.phone || null,
       preferred_contact: d.preferredContact,
-      consent_contact: d.consentContact,
+      city: d.city,
+      office_id: d.officeId || null,
+      occupation: d.occupation || null,
+      interest: d.interest,
+      message: d.message || null,
       consent_privacy: true,
+      marketing_opt_in: d.marketingOptIn,
+      consent_version: d.consentVersion ?? null,
       source_path: d.sourcePath ?? "/join",
       utm: d.utm ?? null,
-      dedupe_key: sha256(`${d.email}|${d.phone.replace(/\D/g, "")}|${day}`),
+      dedupe_key: sha256(`${contactKey}|${day}`),
     });
   if (error) {
     if (error.code === "23505") return { ok: true, duplicate: true };

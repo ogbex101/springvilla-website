@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { X, ArrowRight } from "lucide-react";
 import type { NavLink } from "@/lib/content/queries";
+import type { Media } from "@/lib/content/media-types";
+import { Logo } from "./Logo";
 import { useSmoothScroll } from "@/lib/motion/SmoothScroll";
 
 /** Full-screen Fresh Canopy drawer. Links stagger in; Join pinned to the bottom. */
-export function MobileDrawer({ open, onClose, links, siteName, pathname }: { open: boolean; onClose: () => void; links: NavLink[]; siteName: string; pathname: string }) {
+export function MobileDrawer({ open, onClose, links, siteName, logo, pathname }: { open: boolean; onClose: () => void; links: NavLink[]; siteName: string; logo: Media | null; pathname: string }) {
   const panel = useRef<HTMLDivElement>(null);
   // Keep mounted briefly after close so the exit animation can play.
   const [state, setState] = useState<"closed" | "open" | "closing">("closed");
@@ -68,7 +70,7 @@ export function MobileDrawer({ open, onClose, links, siteName, pathname }: { ope
           className="sv-drawer fixed inset-0 z-[60] flex flex-col overflow-y-auto px-gutter pb-6 pt-4 lg:hidden"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[1.35rem] font-semibold tracking-[-0.03em] text-white">{siteName}</span>
+            <Logo logo={logo} siteName={siteName} onBrandSurface className="-m-2 text-white" />
             <button type="button" onClick={onClose} className="inline-flex size-11 items-center justify-center rounded-full text-white hover:bg-white/10">
               <X className="size-6" aria-hidden />
               <span className="sr-only">Close menu</span>

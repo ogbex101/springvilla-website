@@ -29,7 +29,7 @@ async function Article({ params }: { params: Params }) {
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) notFound();
-  const { related, next } = await getRelatedPosts(slug, post.category?.slug ?? null);
+  const { related, next } = await getRelatedPosts(slug, post.category?.slug ?? null, post.relatedIds);
   const url = siteUrl(`/ideas/${slug}`);
   return (
     <>
@@ -43,7 +43,7 @@ async function Article({ params }: { params: Params }) {
           <RevealText as="h1" immediate className="mt-6 text-display-l font-semibold">{post.title}</RevealText>
           {post.excerpt && <p className="mt-6 text-lead text-muted">{post.excerpt}</p>}
           <p className="mt-6 flex flex-wrap gap-x-3 text-small text-muted">
-            {post.authorName && <span>By {post.authorName}</span>}
+            {post.authorName && <span>By {post.authorName}{post.authorRole ? `, ${post.authorRole}` : ""}</span>}
             <span>Published <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time></span>
             {post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && <span>Updated <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time></span>}
             <span>{post.readingMinutes} min read</span>
@@ -69,6 +69,17 @@ async function Article({ params }: { params: Params }) {
             </aside>
           )}
           <SafeHtml id="article-body" className="sv-prose" html={post.bodyHtml} />
+          {post.sources.length > 0 && (
+            <section className="mt-12 border-t border-line pt-8" aria-labelledby="sources">
+              <h2 id="sources" className="sv-eyebrow text-muted">Sources</h2>
+              <ol className="mt-3 list-decimal space-y-1 pl-5 text-small">
+                {post.sources.map((src, i) => (
+                  <li key={i}>{src.url ? <a href={src.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{src.label}</a> : src.label}</li>
+                ))}
+              </ol>
+            </section>
+          )}
+          {post.cover?.credit && <p className="mt-6 text-caption text-muted">Cover photo: {post.cover.credit}</p>}
           {post.tags.length > 0 && (
             <ul className="mt-12 flex flex-wrap gap-2" aria-label="Tags">
               {post.tags.map((t) => <li key={t.slug} className="rounded-full bg-chip px-3 py-1 text-caption">{t.name}</li>)}

@@ -26,14 +26,22 @@ async function Journey({ params }: { params: Params }) {
   const { slug } = await params;
   const j = await getJourney(slug);
   if (!j) notFound();
+  const blocks: [string, string | null][] = [
+    ["Starting point", j.startingPoint],
+    ["The challenge", j.challenge],
+    ["What they did", j.actionsTaken],
+    ["Support along the way", j.supportReceived],
+    ["What changed", j.currentProgress],
+  ];
   return (
     <>
+      {/* Identity → growth statement */}
       <Section layer="sand" className="pb-section-sm pt-36 md:pt-44" spacing="none">
         <Container className="grid gap-12 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <Link href="/journeys" className="sv-link-underline text-small text-muted">Journeys</Link>
-            <RevealText as="h1" immediate className="mt-6 text-display-l font-semibold">{j.title}</RevealText>
-            <p className="mt-6 sv-eyebrow text-muted">{[j.publicName ?? "Member", j.office?.name].filter(Boolean).join(" · ")}</p>
+            <p className="mt-6 sv-eyebrow text-muted">{[j.publicName ?? "A Springvilla member", j.office?.name].filter(Boolean).join(" · ")}</p>
+            <RevealText as="h1" immediate className="mt-4 text-display-l font-semibold">{j.growthStatement || j.title}</RevealText>
             {j.summary && <p className="mt-6 max-w-[52ch] text-lead text-muted">{j.summary}</p>}
           </div>
           {j.portrait && <div className="lg:col-span-5"><MediaFrame media={j.portrait} ratio="4/5" priority /></div>}
@@ -41,16 +49,41 @@ async function Journey({ params }: { params: Params }) {
       </Section>
       <Section layer="milky">
         <Container className="grid gap-12 lg:grid-cols-12">
-          <SafeHtml className="sv-prose lg:col-span-7" html={j.bodyHtml} />
+          <div className="space-y-10 lg:col-span-7">
+            {/* Starting point → activities and effort → resulting change */}
+            {blocks.filter(([, v]) => v).map(([k, v]) => (
+              <section key={k}>
+                <h2 className="text-display-s font-semibold">{k}</h2>
+                <p className="mt-3 max-w-[62ch] whitespace-pre-line text-lead text-muted">{v}</p>
+              </section>
+            ))}
+            {j.bodyHtml && <SafeHtml className="sv-prose" html={j.bodyHtml} />}
+            {/* Optional quote */}
+            {j.quote && <blockquote className="border-l-2 border-current pl-6 font-serif text-display-s italic leading-snug">&ldquo;{j.quote}&rdquo;</blockquote>}
+            {j.advice && (
+              <section>
+                <h2 className="text-display-s font-semibold">Their advice</h2>
+                <p className="mt-3 max-w-[62ch] whitespace-pre-line text-lead text-muted">{j.advice}</p>
+              </section>
+            )}
+            {/* Related topics */}
+            {j.skillsDeveloped.length > 0 && (
+              <section>
+                <h2 className="sv-eyebrow text-muted">Skills developed</h2>
+                <ul className="mt-3 flex flex-wrap gap-2">{j.skillsDeveloped.map((x) => <li key={x} className="rounded-full bg-chip px-3 py-1 text-small">{x}</li>)}</ul>
+              </section>
+            )}
+          </div>
+          {/* Timeline of updates (appended, never overwritten) */}
           {j.updates.length > 0 && (
             <aside className="lg:col-span-5" aria-labelledby="milestones">
-              <h2 id="milestones" className="text-display-s font-semibold">Milestones</h2>
+              <h2 id="milestones" className="text-display-s font-semibold">Timeline</h2>
               <div className="mt-8"><Timeline items={j.updates} /></div>
             </aside>
           )}
         </Container>
         <Container size="narrow" className="mt-16">
-          <p className="text-small text-muted">This journey is shared with the person&rsquo;s consent and has been verified by Springvilla. Everyone&rsquo;s progress is different; no outcome is guaranteed.</p>
+          <p className="text-small text-muted">Shared with the person&rsquo;s consent and verified by Springvilla. This is one individual&rsquo;s experience, not a typical result; outcomes depend on individual effort, access, circumstances and training.</p>
         </Container>
       </Section>
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Journeys", path: "/journeys" }, { name: j.title, path: `/journeys/${slug}` }])} />

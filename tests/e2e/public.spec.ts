@@ -57,7 +57,8 @@ test.describe("public site", () => {
   test("robots.txt and sitemap", async ({ request }) => {
     const robots = await (await request.get("/robots.txt")).text();
     for (const p of ["/admin", "/member", "/login", "/api", "/dev"]) expect(robots).toContain(`Disallow: ${p}`);
-    const sitemap = await (await request.get("/sitemap.xml")).text();
+    for (const seg of ["pages", "articles", "journeys", "offices", "events", "news"]) expect(robots).toContain(`/sitemap/${seg}.xml`);
+    const sitemap = await (await request.get("/sitemap/pages.xml")).text();
     expect(sitemap).toContain("/discover");
     expect(sitemap).not.toContain("/admin");
   });
@@ -71,7 +72,7 @@ test.describe("public site", () => {
 
   test("no-guarantee line is present on the homepage", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText(/does not guarantee income/).first()).toBeAttached();
+    await expect(page.getByText(/never guarantees income/).first()).toBeAttached();
   });
 
   test("admin and member areas are protected", async ({ page }) => {
@@ -83,13 +84,39 @@ test.describe("public site", () => {
     expect(r.headers()["x-robots-tag"]).toContain("noindex");
   });
 
+  test("Discover follows the blueprint §7 nine-part sequence", async ({ page }) => {
+    await page.goto("/discover");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("committed");
+    const order = ["who-we-are", "why", "philosophy", "offices", "culture", "commitment", "faq"];
+    const tops = await Promise.all(order.map((id) => page.locator(`#${id}`).evaluate((el) => el.getBoundingClientRect().top + window.scrollY)));
+    expect([...tops].sort((a, b) => a - b)).toEqual(tops);
+    await expect(page.getByRole("navigation", { name: "On this page" })).toBeVisible();
+  });
+
+  test("FAQ covers all eleven §7 topics", async ({ page }) => {
+    await page.goto("/faq");
+    for (const q of ["What is Springvilla? How does it relate to FHG?", "What actually happens in an office?", "Is Springvilla only for students?", "What is the 2-in-1 system?", "Is it only network marketing?", "Is NeoLife owned by Springvilla?", "Can I visit before applying?", "Are there costs, purchases, time commitments or eligibility requirements?", "What happens after an application?", "Do I need previous digital or business experience?", "Does participation guarantee income, work or a promotion?"]) {
+      await expect(page.getByRole("button", { name: q })).toBeVisible();
+    }
+  });
+
+  test("Life Here lists the seven §9 experiences", async ({ page }) => {
+    await page.goto("/life-here");
+    for (const t of ["Skills in practice", "Business training", "Public speaking", "Leadership & teamwork", "Community & welfare", "Events & recognition", "Learning alongside other responsibilities"]) await expect(page.getByRole("heading", { name: t })).toBeAttached();
+  });
+
+  test("Our System shows the entity separation table", async ({ page }) => {
+    await page.goto("/our-system");
+    for (const e of ["FHG", "Springvilla", "NeoLife", "Freelancing", "Network marketing"]) await expect(page.getByRole("rowheader", { name: e })).toBeAttached();
+  });
+
   test("FAQ accordion is keyboard operable", async ({ page }) => {
     await page.goto("/faq");
-    const second = page.getByRole("button", { name: /NeoLife a Springvilla product/ });
+    const second = page.getByRole("button", { name: /Is NeoLife owned by Springvilla/ });
     await second.focus();
     await page.keyboard.press("Enter");
     await expect(second).toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByText(/business vehicle used on the network-marketing/).first()).toBeVisible();
+    await expect(page.getByText(/business vehicle used in the network-marketing pathway/).first()).toBeVisible();
   });
 });
 

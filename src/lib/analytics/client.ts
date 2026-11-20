@@ -19,7 +19,8 @@ export type TrackEvent =
   | "contact_submitted"
   | "article_read"
   | "event_view"
-  | "login_success";
+  | "login_success"
+  | "lesson_complete";
 
 export function track(event: TrackEvent, props?: Record<string, string | number | boolean>) {
   if (typeof window === "undefined") return;

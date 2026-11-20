@@ -9,19 +9,27 @@ async function Overview() {
   const s = await requireMember();
   const db = await getServerClient();
   const now = new Date().toISOString();
-  const [{ data: anns }, { data: reads }, { data: events }, { count: lessons }, { count: done }, { data: office }] = await Promise.all([
-    db.from("announcements").select("id,title,published_at").in("kind", ["member", "office"]).eq("status", "published").order("published_at", { ascending: false }).limit(5),
+  const [{ data: anns }, { data: reads }, { data: events }, { count: lessons }, { count: done }, { data: office }, { data: resource }, { data: article }] = await Promise.all([
+    db.from("announcements").select("id,title,published_at,priority").in("kind", ["member", "office"]).eq("status", "published").or(`expires_at.is.null,expires_at.gt.${now}`).order("published_at", { ascending: false }).limit(5),
     db.from("announcement_reads").select("announcement_id").eq("user_id", s.userId),
     db.from("events").select("slug,title,starts_at").eq("status", "published").gte("starts_at", now).order("starts_at").limit(3),
     db.from("lessons").select("id", { count: "exact", head: true }).eq("status", "published"),
     db.from("member_progress").select("lesson_id", { count: "exact", head: true }).eq("user_id", s.userId),
     s.memberOfficeId ? db.from("offices").select("name,slug").eq("id", s.memberOfficeId).maybeSingle() : Promise.resolve({ data: null }),
+    db.from("resources").select("id,title,description").eq("status", "published").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    db.from("blog_posts").select("slug,title").order("published_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
+  const required = (anns ?? []).filter((a) => a.priority === "urgent" && !(reads ?? []).some((r) => r.announcement_id === a.id));
   const read = new Set((reads ?? []).map((r) => r.announcement_id));
   const unread = (anns ?? []).filter((a) => !read.has(a.id));
   return (
     <>
       <PageHeader title={`Hello${s.displayName ? `, ${s.displayName.split(" ")[0]}` : ""}`} description={office ? `Your office: ${office.name}` : "You haven't been linked to an office yet. Ask your office team or contact support."} />
+      {required.length > 0 && (
+        <div role="alert" className="mb-6 rounded-xl bg-[#f6d9d9] p-4 text-small text-[#7a1c1c]">
+          <strong>Action required:</strong> {required.map((a) => a.title).join(" · ")} · <Link href="/member/announcements" className="underline">Read now</Link>
+        </div>
+      )}
       <div className="grid gap-6 md:grid-cols-2">
         <Panel title="My learning" actions={<Link href="/member/learning" className="text-small underline">Open</Link>}>
           {lessons ? (
@@ -40,6 +48,14 @@ async function Overview() {
           {(events ?? []).length === 0 ? <p className="text-small text-canopy/75">No upcoming events.</p> : (
             <ul className="space-y-2">{(events ?? []).map((e) => <li key={e.slug} className="text-small"><strong>{formatDate(e.starts_at, { day: "numeric", month: "short", year: undefined })}</strong> · {e.title}</li>)}</ul>
           )}
+        </Panel>
+        <Panel title="Suggested for you">
+          <ul className="space-y-2 text-small">
+            {resource && <li>Resource: <Link href="/member/resources" className="font-semibold underline-offset-4 hover:underline">{resource.title}</Link></li>}
+            {article && <li>New article: <Link href={`/ideas/${article.slug}`} className="font-semibold underline-offset-4 hover:underline">{article.title}</Link></li>}
+            {!resource && !article && <li className="text-canopy/75">Suggestions will appear as resources and articles are published.</li>}
+          </ul>
+          <p className="mt-4 text-caption text-canopy/70">Optional reading, not required.</p>
         </Panel>
         <Panel title="Need help?"><p className="text-small">Questions about learning, your office or your account? <Link href="/member/support" className="underline">Send a support request</Link>.</p></Panel>
       </div>

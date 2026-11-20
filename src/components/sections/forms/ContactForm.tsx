@@ -10,7 +10,7 @@ import { TextField, TextareaField, SelectField, CheckboxField, RadioCards } from
 import { Button } from "@/components/ui";
 import { track } from "@/lib/analytics/client";
 
-type Office = { id: string; name: string; city: string | null };
+type Office = { id: string; slug: string; name: string; city: string | null };
 
 export function ContactForm({ types, offices, successHeading, successBody, defaultType }: { types: { value: string; label: string; description: string }[]; offices: Office[]; successHeading: string; successBody: string; defaultType?: string }) {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -28,9 +28,13 @@ export function ContactForm({ types, offices, successHeading, successBody, defau
   useEffect(() => {
     startedAt.current = Date.now();
     // Deep links such as /contact?type=feedback pre-select the queue.
-    const t = new URLSearchParams(window.location.search).get("type");
+    const qs = new URLSearchParams(window.location.search);
+    const t = qs.get("type");
     if (t && types.some((x) => x.value === t)) setValue("enquiryType", t as ContactInput["enquiryType"]);
-  }, [setValue, types]);
+    const office = offices.find((o) => o.slug === qs.get("office"));
+    if (office) setValue("officeId", office.id);
+    if (qs.get("report")) setValue("subject", `Incorrect details${office ? `: ${office.name}` : ""}`);
+  }, [setValue, types, offices]);
   useEffect(() => {
     if (done) successRef.current?.focus();
   }, [done]);
@@ -71,7 +75,7 @@ export function ContactForm({ types, offices, successHeading, successBody, defau
         <TextField label="Your name" required autoComplete="name" error={errors.name?.message} {...register("name")} />
         <TextField label="Email" required type="email" autoComplete="email" error={errors.email?.message} {...register("email")} />
         <TextField label="Phone" type="tel" autoComplete="tel" hint="Optional" error={errors.phone?.message} {...register("phone")} />
-        {offices.length > 0 && (type === "office_visit" || type === "member_support" || type === "feedback") ? (
+        {offices.length > 0 && (type === "office_information" || type === "product" || type === "office_visit" || type === "feedback") ? (
           <SelectField label="Which office?" options={offices.map((o) => ({ value: o.id, label: [o.name, o.city].filter(Boolean).join(" · ") }))} placeholder="Not office-specific" {...register("officeId")} />
         ) : (
           <TextField label="Subject" hint="Optional" error={errors.subject?.message} {...register("subject")} />

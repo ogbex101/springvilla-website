@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getServiceClient, hasServiceRole } from "@/lib/supabase/service";
 import { dailySalt, sha256 } from "@/lib/security";
 
-const EVENTS = ["page_view", "cta_click", "hero_video_play", "hero_video_pause", "scroll_depth", "outbound_click", "office_view", "office_search", "join_started", "join_submitted", "contact_submitted", "article_read", "event_view", "login_success"] as const;
+const EVENTS = ["page_view", "cta_click", "hero_video_play", "hero_video_pause", "scroll_depth", "outbound_click", "office_view", "office_search", "join_started", "join_submitted", "contact_submitted", "article_read", "event_view", "login_success", "lesson_complete"] as const;
 
 const schema = z.object({
   e: z.enum(EVENTS),
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     const parsed = schema.safeParse(JSON.parse(raw));
     if (!parsed.success || !hasServiceRole()) return ok;
     const d = parsed.data;
-    if (/^\/(admin|member|api|dev)/.test(d.p)) return ok;
+    if (/^\/(admin|api|dev)/.test(d.p) || (/^\/member/.test(d.p) && d.e !== "lesson_complete" && d.e !== "login_success")) return ok;
 
     const ip = (req.headers.get("x-forwarded-for")?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "0.0.0.0").trim();
     const client = sha256(`${dailySalt()}:${ip}:${ua}`);

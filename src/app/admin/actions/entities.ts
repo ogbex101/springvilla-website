@@ -16,8 +16,8 @@ const fail = (e: unknown): { ok: false; error: string } => {
   return { ok: false, error: msg };
 };
 
-const DATETIME_FIELDS = ["published_at", "starts_at", "ends_at"];
-const HIGH_TRUST = ["name", "slug", "status", "address_line", "postcode", "city", "state", "country", "lat", "lng", "phone", "email", "whatsapp"];
+const DATETIME_FIELDS = ["published_at", "starts_at", "ends_at", "expires_at"];
+const HIGH_TRUST = ["name", "slug", "status", "address_line", "postcode", "city", "state", "country", "lat", "lng", "phone", "email", "whatsapp", "lead_contact_name", "lead_contact_role"];
 
 /* ------------------------------------------------------------------ timezone helpers */
 function tzOffsetMinutes(date: Date, tz: string) {
@@ -241,6 +241,11 @@ export async function loadRefs(kinds: RefKind[]): Promise<Record<string, { value
     } else if (k === "consent") {
       const { data } = await db.from("consent_records").select("id,subject_name,signed_on,withdrawn_at").order("created_at", { ascending: false });
       out[k] = (data ?? []).filter((c) => !c.withdrawn_at).map((c) => ({ value: c.id, label: `${c.subject_name} (signed ${c.signed_on})` }));
+    } else if (k === "posts") {
+      const { data } = await db.from("blog_posts").select("id,title").order("updated_at", { ascending: false }).limit(200);
+      out[k] = (data ?? []).map((o) => ({ value: o.id, label: o.title }));
+    } else if (k === "consentScopes") {
+      out[k] = [["name", "Name"], ["photograph", "Photograph"], ["video", "Video"], ["office", "Office"], ["quote", "Quote"], ["financial", "Any financial detail"], ["story", "Story text"]].map(([value, label]) => ({ value, label }));
     } else if (k === "courses") {
       const { data } = await db.from("courses").select("id,title").order("sort_order");
       out[k] = (data ?? []).map((o) => ({ value: o.id, label: o.title }));

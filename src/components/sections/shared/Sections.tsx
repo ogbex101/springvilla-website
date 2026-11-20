@@ -104,7 +104,7 @@ export function StepsSection({ content, layer }: Base & { content: SectionConten
             </StaggerCards>
           </DrawLine>
         ) : (
-          <StaggerCards as="ol" className={cn("mt-14 grid gap-5 sm:grid-cols-2", items.length >= 5 ? "lg:grid-cols-5" : items.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3")}>
+          <StaggerCards as="ol" className={cn("mt-14 grid gap-5 sm:grid-cols-2", items.length === 5 ? "lg:grid-cols-5" : items.length === 4 || items.length === 8 ? "lg:grid-cols-4" : "lg:grid-cols-3")}>
             {items.map((s, i) => (
               <li key={i} className="flex flex-col rounded-xl border border-line p-6">
                 <span className="font-serif text-display-s italic text-accent">{String(i + 1).padStart(2, "0")}</span>
@@ -136,7 +136,7 @@ export function RelationshipSection({ content, layer }: Base & { content: Sectio
             <ol className="relative grid gap-6 md:grid-flow-col md:auto-cols-fr" aria-label="How the organisations relate">
               {nodes.map((n, i) => (
                 <li key={i} className="relative">
-                  <div className={cn("relative flex aspect-square max-h-72 w-full flex-col items-center justify-center rounded-full border border-current p-6 text-center md:max-h-none", i === nodes.length - 1 && "bg-accent text-accent-fg border-transparent")}>
+                  <div className={cn("relative mx-auto flex aspect-square w-full max-w-60 flex-col items-center justify-center rounded-full border border-current p-6 text-center md:max-w-none", i === nodes.length - 1 && "bg-accent text-accent-fg border-transparent")}>
                     <span className="text-display-s font-semibold">{n.title}</span>
                     {n.caption && <span className={cn("mt-2 max-w-[18ch] text-small", i === nodes.length - 1 ? "opacity-90" : "text-muted")}>{n.caption}</span>}
                   </div>
@@ -330,6 +330,41 @@ export function ListingIntro({ content, layer }: { content: SectionContent<"list
     <Section layer={layer} className="pb-section-sm pt-40 md:pt-52" spacing="none">
       <Container>
         <SectionHeader as="h1" size="xl" eyebrow={content.eyebrow} heading={content.heading} highlight={content.highlight} intro={content.body} />
+      </Container>
+    </Section>
+  );
+}
+
+/* ------------------------------------------------------------------ comparison table (e.g. §8.5 entity separation) */
+export function ComparisonTableSection({ content, layer }: Base & { content: SectionContent<"comparison_table"> }) {
+  const rows = content.rows.filter((r) => r.c1);
+  if (!rows.length) return null;
+  const cols = [content.col1, content.col2, content.col3];
+  return (
+    <Section layer={layer} id={content.anchor || undefined}>
+      <Container>
+        <SectionHeader eyebrow={content.eyebrow} heading={content.heading} highlight={content.highlight} intro={content.intro} />
+        <div className="mt-12 overflow-x-auto rounded-xl border border-line">
+          <table className="w-full min-w-[640px] text-left">
+            <caption className="sr-only">{content.heading}</caption>
+            <thead>
+              <tr className="bg-chip">
+                {cols.map((c, i) => (
+                  <th key={i} scope="col" className="sv-eyebrow p-4 md:px-6">{c}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={i} className="border-t border-line align-top">
+                  <th scope="row" className="p-4 text-lead font-semibold md:px-6">{r.c1}</th>
+                  <td className="border-l border-line p-4 md:px-6">{r.c2}</td>
+                  <td className="border-l border-line p-4 text-muted md:px-6">{r.c3}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Container>
     </Section>
   );

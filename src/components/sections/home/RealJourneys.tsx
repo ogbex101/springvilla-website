@@ -46,7 +46,8 @@ export async function RealJourneys({ content, layer }: { content: SectionContent
                           {j.title}
                         </Link>
                       </h3>
-                      {j.summary && <p className="mt-3 text-muted">{j.summary}</p>}
+                      {j.growthStatement && <p className="mt-3 text-lead">{j.growthStatement}</p>}
+                      {j.summary && <p className="mt-2 text-muted">{j.summary}</p>}
                       <div className="mt-6">
                         <Timeline items={j.updates.slice(-4)} />
                       </div>

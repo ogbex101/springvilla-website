@@ -14,7 +14,7 @@ export async function ContactFormSection({ content, layer }: { content: SectionC
           <SectionHeader as="h1" size="l" eyebrow={content.eyebrow} heading={content.heading} highlight={content.highlight} intro={content.intro} />
         </div>
         <div className="lg:col-span-7">
-          <ContactForm types={types} offices={offices.map((o) => ({ id: o.id, name: o.name, city: o.city }))} successHeading={content.successHeading || "Thank you."} successBody={content.successBody} />
+          <ContactForm types={types} offices={offices.map((o) => ({ id: o.id, slug: o.slug, name: o.name, city: o.city }))} successHeading={content.successHeading || "Thank you."} successBody={content.successBody} />
         </div>
       </Container>
     </Section>

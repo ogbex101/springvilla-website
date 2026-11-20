@@ -27,7 +27,7 @@ export type Widget =
   | "decimal"
   | "privateFile";
 
-export type RefKind = "offices" | "categories" | "tags" | "consent" | "courses" | "modules";
+export type RefKind = "offices" | "categories" | "tags" | "consent" | "courses" | "modules" | "posts" | "consentScopes";
 
 export type FieldMeta = {
   widget: Widget;
@@ -79,6 +79,9 @@ export const f = {
     z.string().uuid().nullable().default(null).meta(meta({ widget: "ref", label, help, ref })),
   refMulti: (label: string, ref: RefKind, help?: string) =>
     z.array(z.string().uuid()).default([]).meta(meta({ widget: "refMulti", label, help, ref })),
+  /** Multi-select over a reference list whose values are plain strings (not ids). */
+  choices: (label: string, ref: RefKind, help?: string) =>
+    z.array(z.string().max(40)).default([]).meta(meta({ widget: "refMulti", label, help, ref })),
   date: (label: string, help?: string) =>
     z.string().regex(/^(\d{4}-\d{2}-\d{2})?$/, "Use a valid date").nullable().default(null).meta(meta({ widget: "date", label, help })),
   datetime: (label: string, help?: string) =>

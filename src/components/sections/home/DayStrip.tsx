@@ -9,7 +9,7 @@ import type { Media } from "@/lib/content/media-types";
 type Chapter = { title: string; body: string; image: string | null };
 
 /** Optional "A day at Springvilla": pinned horizontal chapter strip on desktop; a swipeable row on touch. */
-export function DayStrip({ heading, chapters, media }: { heading: string; chapters: Chapter[]; media: Record<string, Media> }) {
+export function DayStrip({ heading, chapters, media, kind, date }: { heading: string; chapters: Chapter[]; media: Record<string, Media>; kind: "illustrative" | "documented"; date?: string }) {
   const root = useRef<HTMLDivElement>(null);
   useGsap(
     ({ gsap }) => {
@@ -34,6 +34,9 @@ export function DayStrip({ heading, chapters, media }: { heading: string; chapte
   return (
     <div ref={root} className="relative overflow-hidden py-16 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center">
       <h3 className="px-gutter text-display-m font-semibold">{heading}</h3>
+      <p className="mt-3 px-gutter text-small text-muted">
+        {kind === "documented" && date ? `Photographed on ${date}.` : "An illustrative routine, not a fixed daily schedule."}
+      </p>
       <ol data-track className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-gutter pb-4 lg:w-max lg:overflow-visible lg:pb-0" aria-label={heading}>
         {chapters.map((c, i) => (
           <li key={i} className="w-[80vw] shrink-0 snap-start sm:w-[55vw] lg:w-[34vw]">

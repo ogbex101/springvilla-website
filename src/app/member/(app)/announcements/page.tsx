@@ -6,11 +6,15 @@ import { MarkReadButton } from "@/components/member/MemberClient";
 import { PageHeader, EmptyState, Badge } from "@/components/admin/ui";
 import { formatDate } from "@/lib/utils";
 
+function nowIso() {
+  return new Date().toISOString();
+}
+
 async function List() {
   const s = await requireMember();
   const db = await getServerClient();
   const [{ data }, { data: reads }] = await Promise.all([
-    db.from("announcements").select("id,title,summary,body_html,published_at,pinned,kind").in("kind", ["member", "office"]).eq("status", "published").order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(50),
+    db.from("announcements").select("id,title,summary,body_html,published_at,pinned,kind,priority,expires_at").in("kind", ["member", "office"]).eq("status", "published").or(`expires_at.is.null,expires_at.gt.${nowIso()}`).order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(50),
     db.from("announcement_reads").select("announcement_id").eq("user_id", s.userId),
   ]);
   const read = new Set((reads ?? []).map((r) => r.announcement_id));
@@ -22,6 +26,8 @@ async function List() {
           <div className="flex flex-wrap items-center gap-2">
             {!read.has(a.id) && <Badge tone="info">New</Badge>}
             {a.pinned && <Badge>Pinned</Badge>}
+            {a.priority === "urgent" && <Badge tone="bad">Action required</Badge>}
+            {a.priority === "important" && <Badge tone="warn">Important</Badge>}
             <span className="text-caption text-canopy/70">{a.published_at ? formatDate(a.published_at) : ""} · {a.kind === "office" ? "Your office" : "All members"}</span>
           </div>
           <h2 className="mt-2 text-[1.25rem] font-semibold">{a.title}</h2>

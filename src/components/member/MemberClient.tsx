@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { markRead, toggleLesson, resourceLink } from "@/app/member/actions";
 import { btn } from "@/components/admin/ui";
+import { track } from "@/lib/analytics/client";
 
 export function MarkReadButton({ id }: { id: string }) {
   const [pending, start] = useTransition();
@@ -13,7 +14,7 @@ export function LessonToggle({ id, done }: { id: string; done: boolean }) {
   const [pending, start] = useTransition();
   return (
     <label className="inline-flex min-h-11 items-center gap-2 text-small font-semibold">
-      <input type="checkbox" className="size-5 accent-[#2D3E2C]" checked={done} disabled={pending} onChange={(e) => start(() => toggleLesson(id, e.target.checked))} />
+      <input type="checkbox" className="size-5 accent-[#2D3E2C]" checked={done} disabled={pending} onChange={(e) => { const v = e.target.checked; if (v) track("lesson_complete"); start(() => toggleLesson(id, v)); }} />
       {done ? "Completed" : "Mark as complete"}
     </label>
   );

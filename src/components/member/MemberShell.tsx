@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useState, type ReactNode } from "react";
-import { Home, Building2, Megaphone, CalendarDays, FolderOpen, GraduationCap, LifeBuoy, UserRound, LogOut } from "lucide-react";
+import { Home, Building2, Megaphone, CalendarDays, FolderOpen, GraduationCap, LifeBuoy, UserRound, LogOut, Sprout } from "lucide-react";
 import { RouteChange } from "@/lib/motion/RouteChange";
 import { memberSignOut } from "@/app/member/actions";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/member/announcements", label: "Announcements", icon: Megaphone },
   { href: "/member/events", label: "Events", icon: CalendarDays },
   { href: "/member/resources", label: "Resources", icon: FolderOpen },
+  { href: "/member/growth", label: "My Growth", icon: Sprout },
   { href: "/member/support", label: "Support", icon: LifeBuoy },
   { href: "/member/profile", label: "Profile & privacy", icon: UserRound },
 ];

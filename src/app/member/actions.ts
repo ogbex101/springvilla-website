@@ -82,3 +82,16 @@ export async function resourceLink(resourceId: string): Promise<string | null> {
   const { data: signed } = await getServiceClient().storage.from("private-docs").createSignedUrl(m.path, 300);
   return signed?.signedUrl ?? null;
 }
+
+const goalsSchema = z.array(z.string().trim().max(160)).max(8);
+/** My Growth: voluntary goals (§13.2). */
+export async function saveGoals(goals: string[]): Promise<State> {
+  const s = await requireMember();
+  const r = goalsSchema.safeParse(goals.filter((g) => g.trim()));
+  if (!r.success) return { error: "Keep goals short (up to 8)." };
+  const db = await getServerClient();
+  const { error } = await db.from("profiles").update({ goals: r.data }).eq("id", s.userId);
+  if (error) return { error: "Couldn't save your goals." };
+  revalidatePath("/member/growth");
+  return { message: "Goals saved." };
+}

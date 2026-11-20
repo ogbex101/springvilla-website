@@ -2,10 +2,10 @@
 
 Things only you can provide or do. The site keeps working without them: empty fields hide themselves or show an honest empty state.
 
-## A. Files missing from the repo (blocking quality, not the build)
+## A. Files still missing from the repo
 
-- [ ] Add `docs/Springvilla_Master_Website_Blueprint_v1.pdf`. Copy for blueprint sections 7, 9, 11.2, 12 and 24 is waiting on it.
-- [ ] Add `docs/brand/` (Brand Colour Guide + official logo files: SVG preferred, plus PNG on Fresh Canopy and on Cyprus).
+- [x] Blueprint PDF: added at `docs/Springvilla_Master_Website_Blueprint_v1.pdf`; alignment results in `docs/BLUEPRINT_GAPS.md`.
+- [ ] Add `docs/brand/` (Brand Colour Guide v1.0 + **official logo files**: transparent SVG preferred). These did not arrive with the blueprint. Then upload the logo in **Admin → Navigation & settings → Logo**: it will appear unchanged on Fresh Canopy/Cyprus surfaces only.
 - [ ] Optional: licensed Satoshi or General Sans `.woff2` files if you prefer them to Instrument Sans.
 
 ## B. Create the Supabase project (about 15 minutes)
@@ -71,7 +71,10 @@ Fill these in the admin; until then each module hides itself.
     ```bash
     E2E_ADMIN_EMAIL=you@example.com E2E_ADMIN_PASSWORD='…' npx playwright test
     ```
-- [ ] **Check the blueprint against the build.** The page structure for /discover (9 parts), /life-here, the office page (10 parts) and the join form fields (12.2/12.3) follow the brief and CLAUDE.md, not the blueprint PDF (which wasn't supplied). Adjust copy in the admin; tell a developer if a section type is missing.
+- [ ] **Run `npm run db:migrate` then `npm run seed`** after pulling this version. The migration adds the blueprint fields; the seed updates page copy to the blueprint wording **only on pages you haven't edited** and prints the pages it left alone.
+- [ ] **Answer the pending-policy FAQs** (costs/purchases/eligibility, prior experience, time commitment): edit them under Site content → FAQ / Join.
+- [ ] Confirm whether member-support staff should see all enquiries or only those assigned to them (blueprint §14.1 says "limited member records").
+- [ ] Confirm the member onboarding sequence (§13.3, marked "proposed; validate with leadership").
 - [ ] Hero video, poster and all photos (none are bundled; abstract brand fields show until you upload).
 
 ## F. Deploy (Vercel)
