@@ -25,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh overflow-x-clip">{children}</body>
     </html>
   );
 }

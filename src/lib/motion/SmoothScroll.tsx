@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 import Lenis from "lenis";
-import { usePathname } from "next/navigation";
+import { RouteChange } from "./RouteChange";
 import { gsap, ScrollTrigger } from "./gsap";
 import { useReducedMotion } from "./useReducedMotion";
 
@@ -28,12 +28,11 @@ export const useSmoothScroll = () => useContext(ScrollContext);
 
 /**
  * Lenis smooth scroll synced to GSAP's ticker so ScrollTrigger reads the same
- * scroll position. Off for reduced motion and inside /admin and /member.
+ * scroll position. Off for reduced motion. Only mounted by public layouts.
  */
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const reduced = useReducedMotion();
-  const pathname = usePathname();
-  const disabled = reduced || pathname.startsWith("/admin") || pathname.startsWith("/member");
+  const disabled = reduced;
   const lenisRef = useRef<Lenis | null>(null);
   const fallback = useContext(ScrollContext);
   const api = useMemo<ScrollApi>(
@@ -71,12 +70,20 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   }, [disabled]);
 
   // Reset scroll on route change and recalculate triggers once the new page has laid out.
-  useEffect(() => {
-    if (window.location.hash) return;
-    lenisRef.current?.scrollTo(0, { immediate: true });
-    const id = window.setTimeout(() => ScrollTrigger.refresh(), 120);
-    return () => window.clearTimeout(id);
-  }, [pathname]);
+  const first = useRef(true);
+  const onRoute = useCallback(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    if (!window.location.hash) lenisRef.current?.scrollTo(0, { immediate: true });
+    window.setTimeout(() => ScrollTrigger.refresh(), 120);
+  }, []);
 
-  return <ScrollContext.Provider value={api}>{children}</ScrollContext.Provider>;
+  return (
+    <ScrollContext.Provider value={api}>
+      {children}
+      <RouteChange onChange={onRoute} />
+    </ScrollContext.Provider>
+  );
 }

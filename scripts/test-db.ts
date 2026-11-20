@@ -73,7 +73,7 @@ async function main() {
     (await db.query("insert into offices (slug, name, status, city, phone) values ($1, $1, $2, 'City', '000') returning id", [slug, status])).rows[0].id as string;
   const officeA = await off("office-a");
   const officeB = await off("office-b");
-  const officeDraft = await off("office-draft", "draft");
+  await off("office-draft", "draft");
 
   await db.query(
     `insert into user_roles (user_id, role, office_id) values

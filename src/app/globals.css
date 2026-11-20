@@ -83,6 +83,16 @@
   --line: color-mix(in srgb, var(--sv-tiffany) 24%, transparent);
   --chip: color-mix(in srgb, var(--sv-tiffany) 12%, transparent);
 }
+/* Lime Sprout surface: Growth/Primary layer used for a card on a Fresh Canopy section. */
+[data-layer="lime"] {
+  --bg: var(--sv-lime);
+  --fg: var(--sv-canopy);
+  --muted: color-mix(in srgb, var(--sv-canopy) 82%, var(--sv-lime));
+  --accent: var(--sv-canopy);
+  --accent-fg: var(--sv-lime);
+  --line: color-mix(in srgb, var(--sv-canopy) 20%, transparent);
+  --chip: color-mix(in srgb, var(--sv-canopy) 10%, transparent);
+}
 [data-layer="energy"] {
   --bg: var(--sv-silver);
   --fg: var(--sv-white);

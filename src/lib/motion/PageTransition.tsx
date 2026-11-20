@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { RouteChange } from "./RouteChange";
 import { animate } from "motion";
 import { prefersReducedMotion } from "./useReducedMotion";
 
@@ -13,7 +14,6 @@ import { prefersReducedMotion } from "./useReducedMotion";
 export function PageTransition() {
   const curtain = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const pathname = usePathname();
   const pending = useRef(false);
   const first = useRef(true);
 
@@ -39,7 +39,7 @@ export function PageTransition() {
     return () => document.removeEventListener("click", onClick);
   }, [router]);
 
-  useEffect(() => {
+  const onRoute = useCallback(() => {
     if (first.current) {
       first.current = false;
       return;
@@ -49,14 +49,17 @@ export function PageTransition() {
     const el = curtain.current;
     el.style.transformOrigin = "50% 0%";
     animate(el, { scaleY: [1, 0] }, { duration: 0.34, ease: [0.16, 1, 0.3, 1], delay: 0.05 });
-  }, [pathname]);
+  }, []);
 
   return (
+    <>
+    <RouteChange onChange={onRoute} />
     <div
       ref={curtain}
       aria-hidden
       className="pointer-events-none fixed inset-0 z-[90] bg-canopy"
       style={{ transform: "scaleY(0)" }}
     />
+    </>
   );
 }
