@@ -52,6 +52,22 @@ export const getSession = cache(async function getSession(): Promise<SessionInfo
   };
 });
 
+/**
+ * The signed-in user's ASSIGNED roles (super_admin included at aal1), via the
+ * security-definer RPC my_assigned_roles(). Only for routing sign-in; never for
+ * permissions (use getSession().roles). Distinguishes "no roles" from "lookup failed".
+ */
+export async function getAssignedRoles(): Promise<{ ok: true; roles: Role[] } | { ok: false; error: string }> {
+  const supabase = await getServerClient();
+  const { data, error } = await supabase.rpc("my_assigned_roles");
+  if (error) {
+    console.error("[auth] my_assigned_roles failed:", error.code, error.message);
+    return { ok: false, error: error.message };
+  }
+  const roles = ((data ?? []) as unknown[]).map((r) => (typeof r === "string" ? r : (r as { my_assigned_roles: string }).my_assigned_roles)) as Role[];
+  return { ok: true, roles };
+}
+
 export function isStaff(s: SessionInfo | null) {
   return Boolean(s && s.roles.some(isStaffRole));
 }

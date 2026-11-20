@@ -14,7 +14,7 @@ Things only you can provide or do. The site keeps working without them: empty fi
 2. **Project Settings → API**: copy the Project URL, `anon` public key and `service_role` key.
 3. **Project Settings → Database → Connection string → URI**: copy it (replace `[YOUR-PASSWORD]`). This is `DATABASE_URL`.
 4. In the repo, copy `.env.example` to `.env.local` and fill in every value. New-style keys work: put the **publishable** key (`sb_publishable_…`) in `NEXT_PUBLIC_SUPABASE_ANON_KEY` and the **secret** key (`sb_secret_…`) in `SUPABASE_SERVICE_ROLE_KEY`. In `DATABASE_URL`, write any `@` in the password as `%40`. Generate `ANALYTICS_SALT` with `openssl rand -hex 32`. Set `SUPER_ADMIN_EMAIL` to your own email.
-5. **Easiest:** open `docs/supabase_setup.sql`, copy all of it into **SQL Editor → New query → Run**. It creates everything and seeds the copy in one go (regenerate it with `npm run db:setup-sql` after future changes). **Already ran an older copy?** Also run `docs/supabase_patch_0010_api_grants.sql` once: newer Supabase projects don't give the API roles table access automatically, and without it every page and the admin show "permission denied". **Or**, from your own computer, run the migrations (creates every table, policy and storage bucket):
+5. **Easiest:** open `docs/supabase_setup.sql`, copy all of it into **SQL Editor → New query → Run**. It creates everything and seeds the copy in one go (regenerate it with `npm run db:setup-sql` after future changes). **Already ran an older copy?** Also run `docs/supabase_patch.sql` once: newer Supabase projects don't give the API roles table access automatically, and without it every page and the admin show "permission denied". **Or**, from your own computer, run the migrations (creates every table, policy and storage bucket):
    ```bash
    npm run db:migrate
    ```
@@ -73,7 +73,7 @@ Fill these in the admin; until then each module hides itself.
 
 ## E. Things I could not verify in the build environment
 
-- [ ] **Run the end-to-end admin tests against your real Supabase project.** Docker images and a local Supabase stack were not available in the build environment, so the following are written and typechecked but have only been verified up to the database layer (the 74 RLS/permission tests pass on real Postgres 16):
+- [ ] **Run the end-to-end admin tests against your real Supabase project.** Docker images and a local Supabase stack were not available in the build environment, so the following are written and typechecked but have only been verified up to the database layer (the 80 RLS/permission tests pass on real Postgres 16):
   - admin login, MFA enrolment, editing → publishing → seeing it live, media upload with WebP/AVIF processing, the join form saving to the inbox with duplicate protection.
   - How: create a central admin user (not a super admin, which needs a TOTP code), then run
     ```bash

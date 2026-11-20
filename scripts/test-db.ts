@@ -179,6 +179,16 @@ async function main() {
   ok(await fails({ sub: centralId }, "insert into user_roles (user_id, role) values ($1,'super_admin')", [memberA]), "central cannot grant super_admin");
   await as({ sub: superId, aal: "aal1" }, async (q) => ok((await q("update site_settings set tagline='x'")).rowCount === 0, "super admin WITHOUT MFA (aal1) has no admin powers"));
   await as({ sub: superId, aal: "aal2" }, async (q) => ok((await q("update site_settings set tagline='x'")).rowCount === 1, "super admin with MFA (aal2) can edit settings"));
+  await as({ sub: superId, aal: "aal1" }, async (q) => {
+    const r = (await q("select r::text from public.my_assigned_roles() r")).rows.map((x) => x.r);
+    ok(r.includes("super_admin"), "sign-in sees assigned super_admin at aal1 (for MFA routing)");
+    ok((await q("select public.has_role('super_admin') as h")).rows[0].h === false, "...but it still grants nothing at aal1");
+  });
+  await as({ sub: memberA }, async (q) => ok((await q("select r::text from public.my_assigned_roles() r")).rows.every((x) => x.r === "member"), "member sees only their own roles"));
+  ok(await fails({}, "select * from public.my_assigned_roles()"), "anon cannot call my_assigned_roles");
+  await db.query("insert into mfa_backup_codes (user_id, code_hash) values ($1, 'h')", [superId]);
+  ok(await none({ sub: superId, aal: "aal2" }, "select * from mfa_backup_codes"), "backup code hashes are hidden even from their owner");
+  ok(await fails({ sub: superId, aal: "aal2" }, "insert into mfa_backup_codes (user_id, code_hash) values ($1, 'x')", [superId]), "API cannot write backup codes");
   ok(!(await fails({ sub: superId, aal: "aal2" }, "insert into user_roles (user_id, role) values ($1,'super_admin')", [memberA])), "super admin (aal2) can grant super_admin");
 
   console.log("\nPage builder RPCs");

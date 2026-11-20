@@ -43,7 +43,7 @@ test.describe("join form (blueprint §12.2)", () => {
       await page.goto("/join");
       await page.waitForTimeout(2700);
       await page.getByLabel("Full name").fill("E2E Test");
-      await page.getByLabel("Email").fill(email);
+      await page.getByRole("textbox", { name: "Email" }).fill(email);
       await page.getByRole("group", { name: /Preferred contact method/ }).getByText("Email", { exact: true }).click();
       await page.getByLabel("City / state").fill("Ikeja, Lagos");
       await page.getByText("Digital skills", { exact: true }).click();

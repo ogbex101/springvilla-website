@@ -56,8 +56,14 @@ test.describe("public site", () => {
 
   test("robots.txt and sitemap", async ({ request }) => {
     const robots = await (await request.get("/robots.txt")).text();
-    for (const p of ["/admin", "/member", "/login", "/api", "/dev"]) expect(robots).toContain(`Disallow: ${p}`);
-    for (const seg of ["pages", "articles", "journeys", "offices", "events", "news"]) expect(robots).toContain(`/sitemap/${seg}.xml`);
+    if (process.env.SITE_NOINDEX === "true") {
+      // Staging/preview: the whole site is hidden from search engines.
+      expect(robots).toContain("Disallow: /");
+      expect(robots).not.toContain("Sitemap:");
+    } else {
+      for (const p of ["/admin", "/member", "/login", "/api", "/dev"]) expect(robots).toContain(`Disallow: ${p}`);
+      for (const seg of ["pages", "articles", "journeys", "offices", "events", "news"]) expect(robots).toContain(`/sitemap/${seg}.xml`);
+    }
     const sitemap = await (await request.get("/sitemap/pages.xml")).text();
     expect(sitemap).toContain("/discover");
     expect(sitemap).not.toContain("/admin");

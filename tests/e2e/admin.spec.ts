@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import path from "node:path";
 import fs from "node:fs";
-import { adminCreds, hasAdmin, totp, totpSecret } from "./helpers";
+import { adminCreds, formAlert, hasAdmin, totp, totpSecret } from "./helpers";
 
 /**
  * End-to-end admin flows against a real Supabase project.
@@ -16,7 +16,7 @@ test.describe("admin", () => {
     await page.getByLabel("Email").fill("nobody@example.com");
     await page.getByLabel("Password").fill("wrong-password-123");
     await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(page.getByRole("alert")).toContainText("didn't work");
+    await expect(formAlert(page)).toContainText("didn't work");
   });
 
   test.describe("signed in", () => {

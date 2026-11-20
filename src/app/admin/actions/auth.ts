@@ -7,6 +7,8 @@ import { getServiceClient, hasServiceRole } from "@/lib/supabase/service";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { ipHash, rateLimit, sha256 } from "@/lib/security";
 import { siteUrl } from "@/lib/utils";
+import { getAssignedRoles } from "@/lib/auth/session";
+import { isStaffRole } from "@/lib/auth/roles";
 
 export type AuthState = { error?: string; ok?: boolean; message?: string } | null;
 
@@ -38,16 +40,27 @@ export async function adminSignIn(_prev: AuthState, form: FormData): Promise<Aut
   const res = await signIn(String(form.get("email") ?? ""), String(form.get("password") ?? ""));
   if (!res.ok) return { error: res.error };
   const supabase = await getServerClient();
-  const { data: user } = await supabase.auth.getUser();
-  const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.user!.id);
-  const list = (roles ?? []).map((r) => r.role as string);
-  if (!list.some((r) => r !== "member")) {
+  // Assigned roles, read server-side through a security-definer RPC so super_admin is
+  // visible at aal1 (current_roles() hides it until MFA, by design).
+  const assigned = await getAssignedRoles();
+  if (!assigned.ok) {
+    await supabase.auth.signOut();
+    return { error: "We couldn't check your access just now. Please try again in a minute; if it keeps happening, the database setup needs finishing (docs/OWNER_TODO.md)." };
+  }
+  if (!assigned.roles.some(isStaffRole)) {
     await supabase.auth.signOut();
     return { error: "This account doesn't have admin access." };
   }
   const next = String(form.get("next") ?? "");
-  if (list.includes("super_admin")) redirect(`/admin/mfa${next ? `?next=${encodeURIComponent(next)}` : ""}`);
-  redirect(next.startsWith("/admin") ? next : "/admin");
+  const dest = next.startsWith("/admin") ? next : "/admin";
+  if (assigned.roles.includes("super_admin")) {
+    const { data: factors } = await supabase.auth.mfa.listFactors();
+    const hasTotp = Boolean(factors?.totp?.some((f) => f.status === "verified"));
+    const qs = new URLSearchParams({ step: hasTotp ? "verify" : "enrol" });
+    if (dest !== "/admin") qs.set("next", dest);
+    redirect(`/admin/mfa?${qs}`);
+  }
+  redirect(dest);
 }
 
 export async function signOutAction() {

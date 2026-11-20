@@ -18,6 +18,8 @@ export default defineConfig({
     baseURL: BASE,
     trace: "off",
     launchOptions: process.env.PW_CHROMIUM || !process.env.CI ? { executablePath: process.env.PW_CHROMIUM || "/opt/pw-browsers/chromium" } : {},
+    // Sandboxes route outbound HTTPS through a proxy; the browser talks to Supabase directly for MFA.
+    proxy: process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY, bypass: "localhost,127.0.0.1" } : undefined,
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } }, grepInvert: /@mobile/ },

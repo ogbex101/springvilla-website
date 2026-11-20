@@ -24,3 +24,6 @@ export function totp(secretBase32: string, at = Date.now()) {
   return String(n % 1_000_000).padStart(6, "0");
 }
 export const totpSecret = process.env.E2E_ADMIN_TOTP_SECRET ?? "";
+
+/** The page's own error/status alert, ignoring Next's empty route announcer (also role="alert"). */
+export const formAlert = (page: import("@playwright/test").Page) => page.locator('[role="alert"]:not(#__next-route-announcer__)');
