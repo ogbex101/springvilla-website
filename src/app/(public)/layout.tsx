@@ -4,6 +4,9 @@ import { Footer } from "@/components/site/Footer";
 import { SkipLink } from "@/components/site/SkipLink";
 import { SmoothScroll } from "@/lib/motion/SmoothScroll";
 import { PageTransition } from "@/lib/motion/PageTransition";
+import { Analytics } from "@/components/site/Analytics";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const chrome = await getChrome();
@@ -18,6 +21,13 @@ export default async function PublicLayout({ children }: { children: React.React
       </div>
       <Footer chrome={chrome} />
       <PageTransition />
+      <Analytics enabled={chrome.analyticsEnabled} bannerEnabled={chrome.cookieBannerEnabled} bannerText={chrome.cookieBannerText} />
+      {chrome.vercelAnalyticsEnabled && (
+        <>
+          <VercelAnalytics />
+          <SpeedInsights />
+        </>
+      )}
     </SmoothScroll>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui";
 import { RevealText } from "@/lib/motion";
 import { renderHighlighted } from "@/components/ui/DisplayHeading";
+import { ConsentLink } from "./Analytics";
 import type { Chrome } from "@/lib/content/queries";
 
 /**
@@ -116,6 +117,11 @@ export function Footer({ chrome }: { chrome: Chrome }) {
                 </Link>
               </li>
             ))}
+            {chrome.cookieBannerEnabled && (
+              <li>
+                <ConsentLink />
+              </li>
+            )}
           </ul>
         </div>
       </Container>
