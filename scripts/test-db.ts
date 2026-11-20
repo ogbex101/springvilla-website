@@ -48,6 +48,14 @@ async function main() {
       await db.query("rollback");
     }
   }
+  /** True when the role gets no rows OR is refused outright (both mean the data is protected). */
+  async function none(who: Who, sql: string, params?: unknown[]) {
+    try {
+      return (await as(who, (q) => q(sql, params))).rows.length === 0;
+    } catch (e) {
+      return /permission denied/.test((e as Error).message);
+    }
+  }
   async function fails(who: Who, sql: string, params?: unknown[]) {
     try {
       await as(who, (q) => q(sql, params));
@@ -108,11 +116,11 @@ async function main() {
     ok(offices.rows.length === 2 && !offices.rows.some((r) => r.slug === "office-draft"), "sees only published offices");
     const posts = await q("select slug from blog_posts");
     ok(posts.rows.length === 1 && posts.rows[0].slug === "live-post", "sees only published posts (not drafts or future-scheduled)");
-    ok((await q("select * from join_applications")).rows.length === 0, "cannot read applications");
-    ok((await q("select * from contact_enquiries")).rows.length === 0, "cannot read enquiries");
-    ok((await q("select * from audit_log")).rows.length === 0, "cannot read audit log");
     ok((await q("select content from page_sections")).rows.length === 1, "can read published section content");
   });
+  ok(await none({}, "select * from join_applications"), "cannot read applications");
+  ok(await none({}, "select * from contact_enquiries"), "cannot read enquiries");
+  ok(await none({}, "select * from audit_log"), "cannot read audit log");
   ok(await fails({}, "select draft_content from page_sections"), "anon cannot select draft_content");
   ok(await fails({}, "select person_name from member_journeys"), "anon cannot select a journey's private person_name");
   ok(await fails({}, "insert into join_applications (full_name,email,phone,city,interest,consent_contact,consent_privacy) values ('x','x','x','x','digital',true,true)"), "anon cannot insert applications directly (server-only)");
@@ -213,14 +221,14 @@ async function main() {
     ok((await q("select * from storage.objects where bucket_id='consent-proofs'")).rows.length === 0, "member cannot read consent proofs");
     ok((await q("select * from storage.objects where bucket_id='private-docs'")).rows.length === 1, "member can read private docs");
   });
-  await as({}, async (q) => ok((await q("select * from storage.objects where bucket_id='private-docs'")).rows.length === 0, "anon cannot read private docs"));
+  ok(await none({}, "select * from storage.objects where bucket_id='private-docs'"), "anon cannot read private docs");
 
   console.log("\nRate limit + analytics");
   const rl = await db.query("select public.check_rate_limit('t',2,60) a, public.check_rate_limit('t',2,60) b, public.check_rate_limit('t',2,60) c");
   ok(rl.rows[0].a && rl.rows[0].b && !rl.rows[0].c, "rate limit blocks the 3rd call of 2/min");
   ok(await fails({}, "select public.check_rate_limit('x',1,1)"), "anon cannot call rate limiter");
   await db.query("insert into analytics_events (event_name, path, session_hash) values ('page_view','/','h1'),('page_view','/join','h1'),('join_started','/join','h1')");
-  await as({}, async (q) => ok((await q("select * from analytics_events")).rows.length === 0, "anon cannot read analytics events"));
+  ok(await none({}, "select * from analytics_events"), "anon cannot read analytics events");
   ok(await fails({ sub: officeAAdmin }, "select public.analytics_report(now()-interval '1 day', now()+interval '1 day')"), "office admin cannot read analytics");
   await as({ sub: centralId }, async (q) => {
     const r = (await q("select public.analytics_report(now()-interval '1 day', now()+interval '1 day') r")).rows[0].r as { totals: { page_views: number }; funnel: { started: number } };

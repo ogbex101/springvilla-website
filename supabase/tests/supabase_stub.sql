@@ -37,8 +37,8 @@ create table if not exists storage.objects (
 alter table storage.objects enable row level security;
 
 grant usage on schema public, auth, storage to anon, authenticated, service_role;
-alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
-alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
-alter default privileges in schema public grant execute on functions to anon, authenticated, service_role;
+-- Like newer Supabase projects: NO automatic table/sequence/function grants to API roles.
+-- Migration 20261121000010_api_grants.sql must grant everything explicitly.
+alter default privileges in schema public revoke execute on functions from public;
 grant all on all tables in schema storage to anon, authenticated, service_role;
 grant select on auth.users to service_role;
