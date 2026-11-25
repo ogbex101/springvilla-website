@@ -73,12 +73,12 @@ Fill these in the admin; until then each module hides itself.
 
 ## E. Things I could not verify in the build environment
 
-- [ ] **Run the end-to-end admin tests against your real Supabase project.** Docker images and a local Supabase stack were not available in the build environment, so the following are written and typechecked but have only been verified up to the database layer (the 80 RLS/permission tests pass on real Postgres 16):
-  - admin login, MFA enrolment, editing → publishing → seeing it live, media upload with WebP/AVIF processing, the join form saving to the inbox with duplicate protection.
-  - How: create a central admin user (not a super admin, which needs a TOTP code), then run
-    ```bash
-    E2E_ADMIN_EMAIL=you@example.com E2E_ADMIN_PASSWORD='…' npx playwright test
-    ```
+- [x] **End-to-end tests against the real project** (2026-11-25, live Vercel site): admin login, super-admin MFA enrolment + backup codes + recovery, edit → publish → live, media upload, join form with duplicate protection: all passing. Re-run any time with
+  ```bash
+  E2E_BASE_URL=https://<your-site> npx playwright test
+  ```
+  (`E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` in `.env.local` should be a **central admin** test account, not your own.)
+- **Troubleshooting a live error:** open `https://<your-site>/api/health` (shows which settings are present, never their values), and check **Admin → Audit log** for `server.error` entries: every unexpected server error is recorded there with its page and message.
 - [ ] **Run `npm run db:migrate` then `npm run seed`** after pulling this version. The migration adds the blueprint fields; the seed updates page copy to the blueprint wording **only on pages you haven't edited** and prints the pages it left alone.
 - [ ] **Answer the pending-policy FAQs** (costs/purchases/eligibility, prior experience, time commitment): edit them under Site content → FAQ / Join.
 - [ ] Confirm whether member-support staff should see all enquiries or only those assigned to them (blueprint §14.1 says "limited member records").
