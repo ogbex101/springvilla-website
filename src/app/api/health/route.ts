@@ -36,6 +36,7 @@ export async function GET() {
   };
   return NextResponse.json(
     {
+      node: process.version,
       supabaseUrl: url ? (urlOk ? "ok" : "malformed") : "missing",
       anonKey: keyKind(anon),
       serviceKey: keyKind(service),

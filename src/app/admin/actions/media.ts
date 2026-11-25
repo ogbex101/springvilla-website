@@ -1,7 +1,7 @@
 "use server";
 
 import sharp from "sharp";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeSvg } from "@/lib/sanitize";
 import { z } from "zod";
 import { requireCapability } from "@/lib/auth/session";
 import { getServerClient } from "@/lib/supabase/server";
@@ -79,7 +79,7 @@ async function processObject(bucket: string, path: string, declaredSize: number,
   const out = { type: found.type, mime, width: clientMeta.width ?? null, height: clientMeta.height ?? null, duration: clientMeta.duration ?? null, variants: [] as { width: number; path: string; format: string }[], blur: null as string | null };
 
   if (found.type === "image" && mime === "image/svg+xml") {
-    const clean = DOMPurify.sanitize((await readObject(bucket, path)).toString("utf8"), { USE_PROFILES: { svg: true, svgFilters: true } });
+    const clean = sanitizeSvg((await readObject(bucket, path)).toString("utf8"));
     await svc.storage.from(bucket).upload(path, Buffer.from(clean), { contentType: mime, upsert: true });
     return out;
   }

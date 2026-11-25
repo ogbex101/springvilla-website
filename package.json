@@ -17,7 +17,8 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
     "seed:admin": "tsx scripts/seed-admin.ts",
-    "db:setup-sql": "tsx scripts/build-setup-sql.ts"
+    "db:setup-sql": "tsx scripts/build-setup-sql.ts",
+    "test:sanitize": "tsx scripts/test-sanitize.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -36,7 +37,6 @@
     "@vercel/speed-insights": "^2.1.0",
     "clsx": "^2.1.1",
     "gsap": "^3.15.1",
-    "isomorphic-dompurify": "^4.8.0",
     "leaflet": "^1.9.4",
     "lenis": "^1.3.27",
     "lucide-react": "^1.77.0",
@@ -46,6 +46,7 @@
     "react-dom": "19.3.0",
     "react-hook-form": "^7.92.0",
     "recharts": "^3.11.0",
+    "sanitize-html": "^2.18.2",
     "server-only": "^0.0.1",
     "sharp": "^0.35.5",
     "tailwind-merge": "^3.7.1",
@@ -60,6 +61,7 @@
     "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sanitize-html": "^2.16.2",
     "dotenv": "^18.0.10",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
