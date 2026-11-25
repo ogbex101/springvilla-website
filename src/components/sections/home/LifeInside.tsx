@@ -1,3 +1,4 @@
+import { TopicIcon } from "@/components/ui/TopicIcon";
 import { RevealHeading } from "@/components/ui/RevealHeading";
 import Image from "next/image";
 import { Container, Section, Eyebrow, ButtonLink, Chip, type PaletteLayer } from "@/components/ui";
@@ -42,7 +43,10 @@ export function LifeInside({ content, layer, media }: { content: SectionContent<
           <ul className="mt-10 flex flex-wrap gap-2" aria-label="What happens at Springvilla">
             {content.chips.map((c) => (
               <li key={c}>
-                <Chip>{c}</Chip>
+                <Chip className="gap-1.5">
+                  <TopicIcon text={c} variant="inline" className="size-3.5 opacity-80" />
+                  {c}
+                </Chip>
               </li>
             ))}
           </ul>

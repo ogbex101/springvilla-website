@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ICON_OPTIONS } from "./icons";
 import { f } from "./fields";
 
 /* ------------------------------------------------------------------ shared bits */
@@ -45,7 +46,7 @@ export const homeWhatIs = z.object({
   body: f.textarea("Body", undefined, 1200),
   image: f.image("Documentary photo"),
   nodesHeading: f.text("Explainer heading", undefined, 120),
-  nodes: f.list("Explainer nodes", { title: f.text("Title", undefined, 60), body: f.textarea("Text", undefined, 300) }, "Node", "Three connected nodes, e.g. FHG / Springvilla / NeoLife.", 3),
+  nodes: f.list("Explainer nodes", { title: f.text("Title", undefined, 60), body: f.textarea("Text", undefined, 300), icon: f.select("Icon", ICON_OPTIONS, "auto", "Automatic picks an icon from the words.") }, "Node", "Three connected nodes, e.g. FHG / Springvilla / NeoLife.", 3),
   cta: f.cta("Button"),
 });
 
@@ -79,6 +80,9 @@ export const homeTwoPaths = z.object({
 export const homeJourneyWords = z.object({
   words: f.stringList("Words", "Shown one at a time. Five works best.", 7),
   caption: f.textarea("Caption", "Read by screen readers and shown under the words.", 200),
+  bgVideo: f.video("Background video (optional)", "Muted loop behind the section, 8–15 seconds, under 6MB. Plays only while visible."),
+  bgPoster: f.image("Background still", "Shown first, and instead of the video for reduced-motion or data-saver visitors."),
+  bgOverlay: f.number("Background darkening (%)", 40, 92, 78, "Higher keeps text easier to read."),
 });
 
 export const homeLifeInside = z.object({
@@ -164,7 +168,7 @@ export const steps = z.object({
     { value: "pipeline", label: "Pipeline (drawn step by step)" },
     { value: "timeline", label: "Vertical timeline" },
   ] as const, "numbered"),
-  items: f.list("Steps", { title: f.text("Title", undefined, 80), body: f.textarea("Text", undefined, 500) }, "Step", undefined, 12),
+  items: f.list("Steps", { title: f.text("Title", undefined, 80), body: f.textarea("Text", undefined, 500), icon: f.select("Icon", ICON_OPTIONS, "auto", "Automatic picks an icon from the words.") }, "Step", undefined, 12),
   cta: f.cta("Button"),
 });
 
@@ -172,7 +176,7 @@ export const relationship = z.object({
   ...anchor,
   ...heading,
   intro: f.textarea("Intro", undefined, 800),
-  nodes: f.list("Nodes (left to right)", { title: f.text("Title", undefined, 60), caption: f.textarea("Caption", undefined, 240) }, "Node", undefined, 4),
+  nodes: f.list("Nodes (left to right)", { title: f.text("Title", undefined, 60), caption: f.textarea("Caption", undefined, 240), icon: f.select("Icon", ICON_OPTIONS, "auto", "Automatic picks an icon from the words.") }, "Node", undefined, 4),
   note: f.textarea("Note under the graphic", undefined, 400),
 });
 
@@ -227,7 +231,7 @@ export const cardGrid = z.object({
   ...anchor,
   ...heading,
   intro: f.textarea("Intro", undefined, 600),
-  cards: f.list("Cards", { title: f.text("Title", undefined, 80), body: f.textarea("Text", undefined, 400), image: f.image("Image"), href: f.link("Link") }, "Card", undefined, 12),
+  cards: f.list("Cards", { title: f.text("Title", undefined, 80), body: f.textarea("Text", undefined, 400), image: f.image("Image"), href: f.link("Link"), icon: f.select("Icon", ICON_OPTIONS, "auto", "Automatic picks an icon from the words.") }, "Card", undefined, 12),
 });
 
 export const comparisonTable = z.object({
@@ -245,6 +249,9 @@ export const ctaBand = z.object({
   body: f.textarea("Body", undefined, 500),
   primaryCta: f.cta("Primary button"),
   secondaryCta: f.cta("Secondary button"),
+  bgVideo: f.video("Background video (optional)", "Muted loop behind the section, 8–15 seconds, under 6MB. Plays only while visible."),
+  bgPoster: f.image("Background still", "Shown first, and instead of the video for reduced-motion or data-saver visitors."),
+  bgOverlay: f.number("Background darkening (%)", 40, 92, 78, "Higher keeps text easier to read."),
 });
 
 export const listingIntro = z.object({

@@ -8,3 +8,4 @@ export { OutlineNumeral } from "./OutlineNumeral";
 export { Marquee } from "./Marquee";
 export { MediaFrame } from "./MediaFrame";
 export { BrandField } from "./BrandField";
+export { BackgroundVideo } from "./BackgroundVideo";

@@ -22,7 +22,7 @@ export const homeRegistry: Registry = {
   "home.marquee": (s) => <IntroMarquee content={parseSection("home.marquee", s.content)} />,
   "home.what_is": (s, media) => <WhatIs layer={s.layer} media={media} content={parseSection("home.what_is", s.content)} />,
   "home.two_paths": (s, media) => <TwoPaths layer={s.layer} media={media} content={parseSection("home.two_paths", s.content)} />,
-  "home.journey_words": (s) => <JourneyWords content={parseSection("home.journey_words", s.content)} />,
+  "home.journey_words": (s, media) => <JourneyWords content={parseSection("home.journey_words", s.content)} media={media} />,
   "home.life_inside": (s, media) => <LifeInside layer={s.layer} media={media} content={parseSection("home.life_inside", s.content)} />,
   "home.journeys": (s) => <RealJourneys layer={s.layer} content={parseSection("home.journeys", s.content)} />,
   "home.ideas": (s) => <IdeasHappenings layer={s.layer} content={parseSection("home.ideas", s.content)} />,

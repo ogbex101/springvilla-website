@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  */
 export function Logo({ logo, siteName, onBrandSurface, className, size = "md" }: { logo: Media | null; siteName: string; onBrandSurface: boolean; className?: string; size?: "md" | "lg" }) {
   if (logo && onBrandSurface) {
-    const h = size === "lg" ? 72 : 40;
+    const h = size === "lg" ? 128 : 48;
     const w = logo.width && logo.height ? Math.round((logo.width / logo.height) * h) : h * 3;
     return (
       // Clear space: padding equal to ~1/4 of the mark's height on every side.

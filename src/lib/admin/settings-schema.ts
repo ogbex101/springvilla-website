@@ -5,7 +5,7 @@ export const settingsSchema = z.object({
   site_name: f.required("Site name", undefined, 60),
   tagline: f.text("Tagline", undefined, 120),
   logo_asset_id: f.image("Logo (for dark backgrounds)", "Upload the official file unchanged. Shown on Fresh Canopy."),
-  logo_alt_asset_id: f.image("Logo variant (optional)", "e.g. version for Cyprus backgrounds."),
+  logo_alt_asset_id: f.image("Footer logo (optional)", "Larger lockup for the footer, e.g. with the tagline. Falls back to the main logo."),
   contact_email: f.text("Contact email", "Shown in the footer only when filled.", 200),
   contact_phone: f.text("Contact phone", undefined, 40),
   contact_whatsapp: f.text("WhatsApp", undefined, 40),

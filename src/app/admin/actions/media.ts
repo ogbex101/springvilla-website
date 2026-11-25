@@ -90,14 +90,14 @@ async function processObject(bucket: string, path: string, declaredSize: number,
     out.width = meta.autoOrient?.width ?? meta.width ?? null;
     out.height = meta.autoOrient?.height ?? meta.height ?? null;
     const base = path.replace(/\.[^.]+$/, "");
-    for (const w of [640, 1280, 1920]) {
+    for (const w of [640, 1280, 1920, 2560]) {
       if (out.width && w > out.width && w !== 640) continue;
-      const webp = await sharp(full).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 78 }).toBuffer();
+      const webp = await sharp(full).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 84, smartSubsample: true }).toBuffer();
       const vp = `${base}.w${w}.webp`;
       await svc.storage.from(bucket).upload(vp, webp, { contentType: "image/webp", upsert: true });
       out.variants.push({ width: w, path: vp, format: "webp" });
       if (w === 1280) {
-        const avif = await sharp(full).rotate().resize({ width: w, withoutEnlargement: true }).avif({ quality: 55 }).toBuffer();
+        const avif = await sharp(full).rotate().resize({ width: w, withoutEnlargement: true }).avif({ quality: 60 }).toBuffer();
         const ap = `${base}.w${w}.avif`;
         await svc.storage.from(bucket).upload(ap, avif, { contentType: "image/avif", upsert: true });
         out.variants.push({ width: w, path: ap, format: "avif" });

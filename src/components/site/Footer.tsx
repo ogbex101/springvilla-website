@@ -24,7 +24,7 @@ export function Footer({ chrome }: { chrome: Chrome }) {
           Site footer
         </h2>
         {/* Footer is Fresh Canopy: an approved logo surface. */}
-        {chrome.logo && <Logo logo={chrome.logo} siteName={chrome.siteName} onBrandSurface size="lg" className="-m-4 mb-10" />}
+        {(chrome.logoAlt ?? chrome.logo) && <Logo logo={chrome.logoAlt ?? chrome.logo} siteName={chrome.siteName} onBrandSurface size="lg" className="-m-4 mb-10" />}
         {chrome.footer.closingStatement && (
           <RevealText as="p" className="max-w-[16ch] text-display-l font-semibold text-white">
             {renderHighlighted(chrome.footer.closingStatement, chrome.footer.highlight)}

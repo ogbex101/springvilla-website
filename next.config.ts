@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    // One high quality for every photo (Next snaps any requested quality to the nearest entry).
+    qualities: [88],
+    minimumCacheTTL: 2678400,
     remotePatterns: supabaseHost
       ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }]
       : [],

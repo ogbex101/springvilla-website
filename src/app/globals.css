@@ -358,3 +358,35 @@ html.lenis, html.lenis body { height: auto; }
 @keyframes sv-img-settle { from { transform: scale(1.08); } to { transform: none; } }
 .sv-img-settle [data-reveal-inner] { animation: sv-img-settle 1.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 @media (prefers-reduced-motion: reduce) { .sv-img-settle [data-reveal-inner] { animation: none; } }
+
+/* --------------------------------------------------------------------------
+   Micro-interactions (professional register: short, eased, no bounce).
+   -------------------------------------------------------------------------- */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  main article,
+  main [data-card] {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+  }
+  main article:hover,
+  main [data-card]:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 28px 60px -30px rgb(45 62 44 / 0.45);
+  }
+  main article img,
+  main [data-card] img {
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+  }
+  main article:hover img,
+  main [data-card]:hover img {
+    transform: scale(1.045);
+  }
+  main a svg.lucide-arrow-right,
+  main a svg.lucide-arrow-up-right {
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  main a:hover svg.lucide-arrow-right { transform: translateX(4px); }
+  main a:hover svg.lucide-arrow-up-right { transform: translate(3px, -3px); }
+  main [data-icon] { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease; }
+  main article:hover [data-icon],
+  main [data-card]:hover [data-icon] { transform: translateY(-2px) rotate(-6deg); }
+}

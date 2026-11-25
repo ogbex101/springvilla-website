@@ -1,3 +1,4 @@
+import { TopicIcon } from "@/components/ui/TopicIcon";
 import { RevealHeading } from "@/components/ui/RevealHeading";
 import { Container, Section, Eyebrow, ButtonLink, MediaFrame, type PaletteLayer } from "@/components/ui";
 import { RevealImage, RevealText, DrawLine } from "@/lib/motion";
@@ -51,11 +52,12 @@ export function WhatIs({ content, layer, media }: { content: SectionContent<"hom
               <ol className="relative grid gap-10 md:grid-cols-3 md:gap-8">
                 {nodes.map((n, i) => (
                   <li key={i} className="relative flex gap-5 md:block">
-                    <span className="relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-current bg-surface text-small font-semibold">
-                      {String(i + 1).padStart(2, "0")}
+                    <span className="relative z-10 inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-surface">
+                      <TopicIcon text={`${n.title} ${n.body}`} icon={n.icon} className="size-12" />
                     </span>
                     <div className="md:mt-6">
-                      <h3 className="text-display-s font-semibold">{n.title}</h3>
+                      <span className="text-caption font-semibold uppercase tracking-[0.16em] text-muted">{String(i + 1).padStart(2, "0")}</span>
+                      <h3 className="mt-1 text-display-s font-semibold">{n.title}</h3>
                       {n.body && <p className="mt-2 max-w-[34ch] text-muted">{n.body}</p>}
                     </div>
                   </li>

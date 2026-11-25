@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { markReady, useGsap } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "@/lib/motion/useReducedMotion";
 import type { SectionContent } from "@/lib/content/schemas";
+import type { Media } from "@/lib/content/media-types";
+import { BackgroundVideo } from "@/components/ui/BackgroundVideo";
 
 /**
  * Full-screen Fresh Canopy moment. Words swap one at a time with a split-letter
@@ -18,7 +20,9 @@ const STRANDS = [
   "M -40 330 C 160 330, 330 320, 500 330 S 840 340, 1040 330",
 ];
 
-export function JourneyWords({ content }: { content: SectionContent<"home.journey_words"> }) {
+export function JourneyWords({ content, media = {} }: { content: SectionContent<"home.journey_words">; media?: Record<string, Media> }) {
+  const bgVideo = content.bgVideo ? media[content.bgVideo] ?? null : null;
+  const bgPoster = content.bgPoster ? media[content.bgPoster] ?? null : null;
   const root = useRef<HTMLElement>(null);
   const words = content.words.filter(Boolean);
 
@@ -66,6 +70,7 @@ export function JourneyWords({ content }: { content: SectionContent<"home.journe
 
   return (
     <section ref={root} data-layer="canopy" aria-label="The Springvilla journey" className="group/jw relative isolate flex min-h-[100svh] items-center overflow-hidden">
+      {(bgVideo || bgPoster) && <BackgroundVideo video={bgVideo} poster={bgPoster} overlay={content.bgOverlay} className="-z-20" />}
       <svg aria-hidden viewBox="0 0 1000 660" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 -z-10 h-full w-full text-lime/40" fill="none">
         {STRANDS.map((d, i) => (
           <path key={i} data-strand d={d} stroke="currentColor" strokeWidth={i === 4 ? 1.4 : 1} strokeLinecap="round" />

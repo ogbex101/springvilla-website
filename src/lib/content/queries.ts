@@ -46,13 +46,16 @@ export const MEDIA_COLUMNS =
   "id,bucket,path,type,mime,width,height,alt_text,caption,credit,location,date_taken,blur_data_url,consent_confirmed,variants";
 
 export function toMedia(r: MediaRow): Media {
-  // Prefer the largest optimised WebP variant over the original upload.
+  // Images go to next/image, which resizes and encodes per device: give it the
+  // full-quality original so photos are compressed once, not twice. Files next/image
+  // can't read (none today) would fall back to the largest WebP variant.
   const best = (r.variants ?? []).filter((v) => v.format === "webp").sort((a, b) => b.width - a.width)[0];
+  const useOriginal = r.type !== "image" || /^image\/(jpeg|png|webp|avif|svg\+xml)$/.test(r.mime);
   return {
     id: r.id,
     type: r.type,
-    url: publicStorageUrl(r.bucket, best?.path ?? r.path),
-    mime: best ? "image/webp" : r.mime,
+    url: publicStorageUrl(r.bucket, useOriginal ? r.path : (best?.path ?? r.path)),
+    mime: useOriginal ? r.mime : best ? "image/webp" : r.mime,
     width: r.width,
     height: r.height,
     alt: r.alt_text ?? "",

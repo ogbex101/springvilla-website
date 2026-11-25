@@ -5,3 +5,4 @@ export { MagneticButton } from "./MagneticButton";
 export { CountUp } from "./CountUp";
 export { ColourShift } from "./ColourShift";
 export { DrawLine } from "./DrawLine";
+export { AutoMotion } from "./AutoMotion";

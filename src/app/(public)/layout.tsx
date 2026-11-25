@@ -5,6 +5,8 @@ import { SkipLink } from "@/components/site/SkipLink";
 import { SmoothScroll } from "@/lib/motion/SmoothScroll";
 import { PageTransition } from "@/lib/motion/PageTransition";
 import { Analytics } from "@/components/site/Analytics";
+import { Suspense } from "react";
+import { AutoMotion } from "@/lib/motion/AutoMotion";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -21,6 +23,9 @@ export default async function PublicLayout({ children }: { children: React.React
       </div>
       <Footer chrome={chrome} />
       <PageTransition />
+      <Suspense fallback={null}>
+        <AutoMotion />
+      </Suspense>
       <Analytics enabled={chrome.analyticsEnabled} bannerEnabled={chrome.cookieBannerEnabled} bannerText={chrome.cookieBannerText} />
       {chrome.vercelAnalyticsEnabled && (
         <>

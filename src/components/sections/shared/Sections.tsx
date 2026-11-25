@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Container, Section, ButtonLink, MediaFrame, Chip, OutlineNumeral, type PaletteLayer } from "@/components/ui";
+import { Container, Section, ButtonLink, MediaFrame, Chip, OutlineNumeral, BackgroundVideo, type PaletteLayer } from "@/components/ui";
 import { RevealImage, RevealText, StaggerCards, DrawLine } from "@/lib/motion";
 import type { SectionContent } from "@/lib/content/schemas";
 import type { Media } from "@/lib/content/media-types";
@@ -8,6 +8,7 @@ import { hasCta } from "@/lib/content/cta";
 import { SafeHtml } from "@/components/site/SafeHtml";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";
+import { TopicIcon } from "@/components/ui/TopicIcon";
 
 type Base = { layer: PaletteLayer; media: Record<string, Media> };
 
@@ -79,9 +80,12 @@ export function StepsSection({ content, layer }: Base & { content: SectionConten
             <ol className="relative grid gap-10 lg:grid-cols-[repeat(var(--cols),minmax(0,1fr))] lg:gap-6" style={{ ["--cols" as string]: items.length }}>
               {items.map((s, i) => (
                 <li key={i} className="relative flex gap-5 lg:block">
-                  <span className="relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-small font-semibold text-accent-fg">{i + 1}</span>
+                  <span className="relative z-10 inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-surface">
+                    <TopicIcon text={`${s.title} ${s.body}`} icon={s.icon} className="size-12" />
+                  </span>
                   <div className="lg:mt-6 lg:pr-4">
-                    <h3 className="text-[1.3rem] font-semibold leading-snug">{s.title}</h3>
+                    <span className="text-caption font-semibold uppercase tracking-[0.16em] text-muted">Step {i + 1}</span>
+                    <h3 className="mt-1 text-[1.3rem] font-semibold leading-snug">{s.title}</h3>
                     {s.body && <p className="mt-2 text-muted">{s.body}</p>}
                   </div>
                 </li>
@@ -106,8 +110,11 @@ export function StepsSection({ content, layer }: Base & { content: SectionConten
         ) : (
           <StaggerCards as="ol" className={cn("mt-14 grid gap-5 sm:grid-cols-2", items.length === 5 ? "lg:grid-cols-5" : items.length === 4 || items.length === 8 ? "lg:grid-cols-4" : "lg:grid-cols-3")}>
             {items.map((s, i) => (
-              <li key={i} className="flex flex-col rounded-xl border border-line p-6">
-                <span className="font-serif text-display-s italic text-accent">{String(i + 1).padStart(2, "0")}</span>
+              <li key={i} data-card className="flex flex-col rounded-xl border border-line p-6">
+                <div className="flex items-center justify-between">
+                  <TopicIcon text={`${s.title} ${s.body}`} icon={s.icon} />
+                  <span className="font-serif text-display-s italic text-accent">{String(i + 1).padStart(2, "0")}</span>
+                </div>
                 <h3 className="mt-6 text-[1.3rem] font-semibold leading-snug">{s.title}</h3>
                 {s.body && <p className="mt-2 text-muted">{s.body}</p>}
               </li>
@@ -137,6 +144,7 @@ export function RelationshipSection({ content, layer }: Base & { content: Sectio
               {nodes.map((n, i) => (
                 <li key={i} className="relative">
                   <div className={cn("relative mx-auto flex aspect-square w-full max-w-60 flex-col items-center justify-center rounded-full border border-current p-6 text-center md:max-w-none", i === nodes.length - 1 && "bg-accent text-accent-fg border-transparent")}>
+                    <TopicIcon text={`${n.title} ${n.caption}`} icon={n.icon} variant="inline" className="mb-3 size-7" />
                     <span className="text-display-s font-semibold">{n.title}</span>
                     {n.caption && <span className={cn("mt-2 max-w-[18ch] text-small", i === nodes.length - 1 ? "opacity-90" : "text-muted")}>{n.caption}</span>}
                   </div>
@@ -208,7 +216,7 @@ export function RealitySection({ content, layer }: Base & { content: SectionCont
             <ul className="mt-10 divide-y divide-line border-y border-line">
               {content.points.map((p) => (
                 <li key={p} className="flex gap-4 py-5 text-lead">
-                  <span aria-hidden className="mt-3 h-px w-6 shrink-0 bg-current" />
+                  <TopicIcon text={p} variant="inline" className="mt-1.5 size-5 text-accent" />
                   {p}
                 </li>
               ))}
@@ -265,7 +273,14 @@ export function CardGridSection({ content, layer, media }: Base & { content: Sec
                 </div>
               )}
               <div className="flex flex-1 flex-col p-6">
-                {!anyImage && <span className="font-serif text-display-s italic text-accent">{String(i + 1).padStart(2, "0")}</span>}
+                {anyImage ? (
+                  <TopicIcon text={`${c.title} ${c.body}`} icon={c.icon} className="-mt-12 mb-4 bg-surface shadow-[0_10px_30px_-12px_rgb(0_0_0/0.35)]" />
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <TopicIcon text={`${c.title} ${c.body}`} icon={c.icon} />
+                    <span className="font-serif text-display-s italic text-accent">{String(i + 1).padStart(2, "0")}</span>
+                  </div>
+                )}
                 <h3 className={cn("text-[1.3rem] font-semibold", !anyImage && "mt-6")}>
                   {c.href ? (
                     <Link href={c.href} className="after:absolute after:inset-0">
@@ -286,14 +301,18 @@ export function CardGridSection({ content, layer, media }: Base & { content: Sec
 }
 
 /* ------------------------------------------------------------------ CTA band */
-export function CtaBandSection({ content, layer }: Base & { content: SectionContent<"cta_band"> }) {
+export function CtaBandSection({ content, layer, media }: Base & { content: SectionContent<"cta_band"> }) {
   if (!content.heading) return null;
+  const bgVideo = content.bgVideo ? media[content.bgVideo] ?? null : null;
+  const bgPoster = content.bgPoster ? media[content.bgPoster] ?? null : null;
+  const cinematic = Boolean(bgVideo || bgPoster);
   return (
-    <Section layer={layer} spacing="sm">
-      <Container className="flex flex-col gap-10 py-6 lg:flex-row lg:items-end lg:justify-between">
+    <Section layer={cinematic ? "canopy" : layer} spacing={cinematic ? "default" : "sm"} className={cn(cinematic && "overflow-hidden")}>
+      {cinematic && <BackgroundVideo video={bgVideo} poster={bgPoster} overlay={content.bgOverlay} />}
+      <Container className={cn("flex flex-col gap-10 py-6 lg:flex-row lg:items-end lg:justify-between", cinematic && "py-16 md:py-24")}>
         <div>
           <SectionHeader eyebrow={content.eyebrow} heading={content.heading} highlight={content.highlight} size="m" />
-          {content.body && <p className="mt-5 max-w-[48ch] text-lead text-muted">{content.body}</p>}
+          {content.body && <p className={cn("mt-5 max-w-[48ch] text-lead", cinematic ? "text-white/85" : "text-muted")}>{content.body}</p>}
         </div>
         <div className="flex shrink-0 flex-wrap gap-3">
           {hasCta(content.primaryCta) && <ButtonLink href={content.primaryCta.href} data-cta="cta-band-primary">{content.primaryCta.label}</ButtonLink>}
